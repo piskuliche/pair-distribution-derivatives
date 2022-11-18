@@ -62,6 +62,7 @@ class RDFS:
             all_mols.append(np.average(wrdfs,axis=0))
         av = np.average(all_mols,axis=0)
         return av
+        
 
     def _pbc_dist(self, r1, r2, L):
         """
