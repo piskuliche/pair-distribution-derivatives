@@ -24,7 +24,7 @@ Copyright November 2022, Boston University
 
 For questions, contact Zeke Piskulich (piskulichz@gmail.com)
 
-## setup_rdf.py
+# setup_rdf.py
 
 This code writes input files for [LAMMPS] that calculates the energies of various groups, decided by a distance cutoff.
 
