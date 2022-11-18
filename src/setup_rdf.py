@@ -11,18 +11,27 @@ This is a code that sets up an energy calculation for different groups, split up
 
 
 def Main(Iargs):
-    u = mda.Universe(Iargs.data,Iargs.dump)
-    atoms = u.select_atoms("all")
-    for ts in u.trajectory[0:Iargs.nconfigs:Iargs.skip]:
-        current_frame = ts.frame*Iargs.framesep + Iargs.startframe
-        L = ts.dimensions[:3]
-        comr = atoms.center_of_mass(compound='residues')
-        nmols = np.shape(comr)[0]
-        if ts.frame == 0:
-            Prep_Dir(nmols)
-        dr = Get_Distances(comr,L,Iargs.dim)
-        Write_Groups(dr,current_frame,Iargs.cut)
-    Write_System(Iargs.sys,nmols)
+    def LAMMPS_Main(Iargs):
+        u = mda.Universe(Iargs.data,Iargs.dump)
+        atoms = u.select_atoms("all")
+        for ts in u.trajectory[0:Iargs.nconfigs:Iargs.skip]:
+            current_frame = ts.frame*Iargs.framesep + Iargs.startframe
+            L = ts.dimensions[:3]
+            comr = atoms.center_of_mass(compound='residues')
+            nmols = np.shape(comr)[0]
+            if ts.frame == 0:
+                Prep_Dir(nmols)
+            dr = Get_Distances(comr,L,Iargs.dim)
+            Write_Groups(dr,current_frame,Iargs.cut)
+        Write_System(Iargs.sys,nmols)
+    def GMX_Main(Iargs):
+        exit("Error: Gromacs support not yet added")
+    if Iargs.software == 'LAMMPS':
+        LAMMPS_Main(Iargs)
+    elif Iargs.software == 'GMX':
+        GMX_Main(Iargs)
+    else:
+        exit("Error: Sofware %s not recognized, options are LAMMPS or GMX" % Iargs.software)
 
         
 
@@ -150,6 +159,7 @@ if __name__ == "__main__":
     parser.add_argument('-framesep',default=1000,               type=int, help='Dump Frequency (Excluding Skip)')
     parser.add_argument('-startframe',default=1000000,          type=int, help='Starting frame timestep number')
     parser.add_argument('-dim',     default=3,                  type=int, help='Dimsensionality (2 or 3)')
+    parser.add_argument('-software',default='LAMMPS',           type=str, help='MD Simualtion Program')
     Iargs = parser.parse_args()
 
     Main(Iargs)
