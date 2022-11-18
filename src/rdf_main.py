@@ -12,23 +12,40 @@ from MDAnalysis.analysis.leaflet import LeafletFinder
 
 
 def Main(Iargs):
-    u = mda.Universe(Iargs.data, Iargs.trj)
-    all_rdfs = RDFS(dr = Iargs.dr, rmax = Iargs.rmax, dim = Iargs.dim)
+    def LIPIDS_Main(Iargs):
+        u = mda.Universe(Iargs.data, Iargs.trj)
+        all_rdfs = RDFS(dr = Iargs.dr, rmax = Iargs.rmax, dim = Iargs.dim)
 
-    start, stop = Iargs.seg*Iargs.fcount, (Iargs.seg+1)*Iargs.fcount
-    count = 0
-    for ts in u.trajectory[start:stop:Iargs.skip]:
-        leafs = LeafletFinder(u, Iargs.leafsel, pbc=True)
-        leaf1, leaf2 = leafs.groups(0), leafs.groups(1)
-        if count == 0: 
-            all_rdfs._calc_rdf(leaf1.positions, ts, leaf1.resids, init=True)
-            all_rdfs._calc_rdf(leaf2.positions, ts, leaf2.resids, init=True)
-        else:
-            all_rdfs._calc_rdf(leaf1.positions, ts, leaf1.resids, init=False)
-            all_rdfs._calc_rdf(leaf2.positions, ts, leaf2.resids, init=False)
-        count += 1
-    pickle.dump(all_rdfs,open("all_rdfs.pckl",'wb'))
-    return
+        start, stop = Iargs.seg*Iargs.fcount, (Iargs.seg+1)*Iargs.fcount
+        count = 0
+        for ts in u.trajectory[start:stop:Iargs.skip]:
+            leafs = LeafletFinder(u, Iargs.leafsel, pbc=True)
+            leaf1, leaf2 = leafs.groups(0), leafs.groups(1)
+            if count == 0: 
+                all_rdfs._calc_rdf(leaf1.positions, ts, leaf1.resids, init=True)
+                all_rdfs._calc_rdf(leaf2.positions, ts, leaf2.resids, init=True)
+            else:
+                all_rdfs._calc_rdf(leaf1.positions, ts, leaf1.resids, init=False)
+                all_rdfs._calc_rdf(leaf2.positions, ts, leaf2.resids, init=False)
+            count += 1
+        pickle.dump(all_rdfs,open("all_rdfs.pckl",'wb'))
+        return
+    def REG_Main(Iargs):
+        u = mda.Universe(Iargs.data, Iargs.trj)
+        sel1 = u.select_atoms("Iargs.sel1")
+        all_rdfs = RDFS(dr = Iargs.dr, rmax = Iargs.rmax, dim = Iargs.dim)
+
+        start, stop = Iargs.seg*Iargs.fcount, (Iargs.seg+1)*Iargs.fcount
+        count = 0
+        for ts in u.trajectory[start:stop:Iargs.skip]:
+            if count == 0: 
+                all_rdfs._calc_rdf(sel1.positions, ts, sel1.resids, init=True)
+            else:
+                all_rdfs._calc_rdf(sel1.positions, ts, sel1.resids, init=False)
+            count += 1
+        pickle.dump(all_rdfs,open("all_rdfs.pckl",'wb'))
+        return
+
 
 
 
@@ -45,6 +62,8 @@ if __name__ == "__main__":
     parser.add_argument('-leafsel', default="type 4",       type=str,   help = 'Leaflet Selection Text')
     parser.add_argument('-seg',     default=0,              type=int,   help = 'Which segment to do?')
     parser.add_argument('-skip',    default=10,             type=int,   help = 'Frames to skip')
+    parser.add_argument('-software',default='LAMMPS',       type=str,   help = 'MD Software Package')
+    parser.add_argument('-lipids',  default=False,          type=bool,  help = 'True or False, incorporates leaflet info')
     
     Iargs = parser.parse_args()
 

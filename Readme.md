@@ -2,6 +2,12 @@
 
 This is a code to undertake calculations of derivatives of the radial distribution function, using a fluctuation theory approach.
 
+To Do:
+
+1) Right now support is only included for same type interactions, and for lipids it assumes that is the phosphate group
+
+2) I haven't tried the 3D rdf yet, and haven't tried the not lipid option
+
 ## Dependencies 
 
 This package uses aspects of python from the following packages, all of which must be installed prior to first use of this code.
