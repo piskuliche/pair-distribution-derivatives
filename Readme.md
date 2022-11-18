@@ -1,4 +1,4 @@
-### RDF and Energy Weighting Code
+# RDF and Energy Weighting Code
 
 This is a code to undertake calculations of derivatives of the radial distribution function, using a fluctuation theory approach. 
 
