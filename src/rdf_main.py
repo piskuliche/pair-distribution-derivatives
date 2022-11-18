@@ -45,6 +45,10 @@ def Main(Iargs):
             count += 1
         pickle.dump(all_rdfs,open("all_rdfs.pckl",'wb'))
         return
+    if Iargs.lipids == True:
+        LIPIDS_Main(Iargs)
+    else:
+        REG_Main(Iargs)
 
 
 
@@ -63,7 +67,7 @@ if __name__ == "__main__":
     parser.add_argument('-seg',     default=0,              type=int,   help = 'Which segment to do?')
     parser.add_argument('-skip',    default=10,             type=int,   help = 'Frames to skip')
     parser.add_argument('-software',default='LAMMPS',       type=str,   help = 'MD Software Package')
-    parser.add_argument('-lipids',  default=False,          type=bool,  help = 'True or False, incorporates leaflet info')
+    parser.add_argument('-lipids',  default=True,          type=bool,  help = 'True or False, incorporates leaflet info')
     
     Iargs = parser.parse_args()
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import glob, shutil
 import numpy as np
 import MDAnalysis as mda
 
@@ -20,10 +21,10 @@ def Main(Iargs):
             comr = atoms.center_of_mass(compound='residues')
             nmols = np.shape(comr)[0]
             if ts.frame == 0:
-                Prep_Dir(nmols)
+                Prep_Dir(nmols,Iargs)
             dr = Get_Distances(comr,L,Iargs.dim)
-            Write_Groups(dr,current_frame,Iargs.cut)
-        Write_System(Iargs.sys,nmols)
+            Write_Groups(dr,current_frame,Iargs)
+        Write_System(nmols,Iargs)
     def GMX_Main(Iargs):
         exit("Error: Gromacs support not yet added")
     if Iargs.software == 'LAMMPS':
@@ -62,24 +63,28 @@ def Sort_Distances(dr):
     sdr=np.take_along_axis(dr, idx, axis=-1)
     return idx,sdr
 
-def Prep_Dir(nmols):
+def Prep_Dir(nmols,Iargs):
     """
     This function writes the computes needed to get all the energies fro each of the groups.
     """
     import os
-    if not os.path.exists("./include_dir"):
-        os.makedirs("./include_dir")
-    if not os.path.exists("./ener_dir"):
-        os.makedirs("./ener_dir")
-    if not os.path.exists("./calc_dir"):
-        os.makedirs("./calc_dir")
-    if not os.path.exists("./calc_dir/logs"):
-        os.makedirs("./calc_dir/logs")
-    fi = open("./include_dir/include.computes",'w')
+    if not os.path.exists("./%s"%Iargs.subdir):
+        os.makedirs("./%s"%Iargs.subdir)
+    if not os.path.exists("./%s/include_dir"%Iargs.subdir):
+        os.makedirs("./%s/include_dir"%Iargs.subdir)
+    if not os.path.exists("./%s/ener_dir"%Iargs.subdir):
+        os.makedirs("./%s/ener_dir"%Iargs.subdir)
+    if not os.path.exists("./%s/calc_dir"%Iargs.subdir):
+        os.makedirs("./%s/calc_dir"%Iargs.subdir)
+    if not os.path.exists("./%s/calc_dir/logs"%Iargs.subdir):
+        os.makedirs("./%s/calc_dir/logs"%Iargs.subdir)
+    for basefile in glob.glob("./base/*"):
+        shutil.copy(basefile,"./%s/"%Iargs.subdir)
+
+    fi = open("./%s/include_dir/include.computes"%Iargs.subdir,'w')
     # Define the initial groups to be 0
-    fi.write("group solu molecule 0\n")
-    fi.write("group close molecule 0\n")
-    fi.write("group far molecule 0\n")
+    for grp in ["lt","solu","close","far"]:
+        fi.write("group %s molecule 0\n"%grp)
 
     # Pairwise Components
     fi.write("compute sspair solu group/group solu pair yes\n")
@@ -101,7 +106,7 @@ def Prep_Dir(nmols):
     fi.close()
         
     for i in range(nmols):
-        incf = open("./include_dir/include.groups-%d"%i,'w')
+        incf = open("./%s/include_dir/include.groups-%d"%(Iargs.subdir,i),'w')
         # Final Files
         incf.write("fix wpair all ave/time 1000 1 1000 c_sspair c_ccpair c_ffpair c_scpair c_sfpair c_cfpair file ../ener_dir/pair.compute%d\n"%i)
         incf.write("fix wintr all ave/time 1000 1 1000 c_sintra c_cintra c_fintra file ../ener_dir/intra.compute%d\n"%i)
@@ -109,15 +114,18 @@ def Prep_Dir(nmols):
 
 
 
-def Write_Groups(dr,frame,cut):
+def Write_Groups(dr,frame,Iargs):
     """
     This writes the group occupancies out to a different file for each molcule.
     """
 
     nmols=np.shape(dr)[0]
     for i in range(nmols):
-        fi = open("./include_dir/include.groups-%d"%i,'a')
-        close=np.where(dr[i]<cut)[-1]
+        fi = open("./%s/include_dir/include.groups-%d"%(Iargs.subdir,i),'a')
+        close=np.where(dr[i]<Iargs.cut)[-1]
+        for grp in ["lt","solu","close","far"]:
+            fi.write("group %s clear\n"%grp)
+        fi.write("\n")
         fi.write("group lt molecule ")
         for j in close:
             fi.write("%d "% (j+1))
@@ -125,22 +133,23 @@ def Write_Groups(dr,frame,cut):
         fi.write("group solu molecule %d\n"%(i+1))
         fi.write("group close subtract lt solu\n")
         fi.write("group far subtract all lt solu\n")
+        fi.write("\n")
         fi.write('print "beginning rerun %d"\n'%frame)
-        fi.write("rerun ../dump.lammpsdump first %d last %d dump x y z\n" % (frame,frame))
+        fi.write("rerun ../../dump.lammpsdump first %d last %d dump x y z\n" % (frame,frame))
         fi.write('print "finishing rerun"\n')
         fi.close()
 
 
-def Write_System(sysfile,nmols):
+def Write_System(nmols,Iargs):
     """
     This section writes the includes into the simulation input file.
     """
     print("Writing System Files")
     lines=None
-    with open(sysfile,'r') as f:
+    with open("./%s/%s" %(Iargs.subdir,Iargs.sys),'r') as f:
         lines = f.readlines()
     for i in range(nmols):
-        with open("calc_dir/"+sysfile+"-%d"%i,'w') as g:
+        with open("./%s/calc_dir/%s-%d"%(Iargs.subdir,Iargs.sys,i),'w') as g:
             for line in lines:
                 g.write(line)
             g.write("log logs/log.%d.out\n"%i)
@@ -158,8 +167,9 @@ if __name__ == "__main__":
     parser.add_argument('-skip',    default=1,                  type=int, help='Frequency to use frames')
     parser.add_argument('-framesep',default=1000,               type=int, help='Dump Frequency (Excluding Skip)')
     parser.add_argument('-startframe',default=1000000,          type=int, help='Starting frame timestep number')
-    parser.add_argument('-dim',     default=3,                  type=int, help='Dimsensionality (2 or 3)')
+    parser.add_argument('-dim',     default=2,                  type=int, help='Dimsensionality (2 or 3)')
     parser.add_argument('-software',default='LAMMPS',           type=str, help='MD Simualtion Program')
+    parser.add_argument('-subdir',  default='rdf_deriv',        type=str, help='Subdirectory for calculation')
     Iargs = parser.parse_args()
 
     Main(Iargs)
