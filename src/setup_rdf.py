@@ -87,12 +87,12 @@ def Prep_Dir(nmols,Iargs):
         fi.write("group %s molecule 0\n"%grp)
 
     # Pairwise Components
-    fi.write("compute sspair solu group/group solu pair yes\n")
-    fi.write("compute ccpair close group/group close pair yes\n")
-    fi.write("compute ffpair far group/group far pair yes\n")
-    fi.write("compute scpair solu group/group close pair yes\n")
-    fi.write("compute sfpair solu group/group far pair yes\n")
-    fi.write("compute cfpair close group/group far pair yes\n")
+    fi.write("compute sspair solu pe/tally solu\n")
+    fi.write("compute ccpair close pe/tally close\n")
+    fi.write("compute ffpair far pe/tally far\n")
+    fi.write("compute scpair solu pe/tally close\n")
+    fi.write("compute sfpair solu pe/tally far\n")
+    fi.write("compute cfpair close pe/tally far\n")
 
 
     # Per Atom components
