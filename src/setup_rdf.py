@@ -135,7 +135,7 @@ def Write_Groups(dr,frame,Iargs):
         fi.write("group far subtract all lt solu\n")
         fi.write("\n")
         fi.write('print "beginning rerun %d"\n'%frame)
-        fi.write("rerun ../../dump.lammpsdump first %d last %d dump x y z\n" % (frame,frame))
+        fi.write("rerun ../../dump_dir/dump.lammpsdump-%d first %d last %d dump x y z\n" % (frame,frame,frame))
         fi.write('print "finishing rerun"\n')
         fi.close()
 
