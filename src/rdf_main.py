@@ -65,7 +65,7 @@ if __name__ == "__main__":
     parser.add_argument('-trj',     default="dump.lammpsdump",type=str, help = 'Dump file')
     parser.add_argument('-leafsel', default="type 4",       type=str,   help = 'Leaflet Selection Text')
     parser.add_argument('-seg',     default=0,              type=int,   help = 'Which segment to do?')
-    parser.add_argument('-skip',    default=10,             type=int,   help = 'Frames to skip')
+    parser.add_argument('-skip',    default=1,              type=int,   help = 'Frames to skip')
     parser.add_argument('-software',default='LAMMPS',       type=str,   help = 'MD Software Package')
     parser.add_argument('-lipids',  default=True,          type=bool,  help = 'True or False, incorporates leaflet info')
     

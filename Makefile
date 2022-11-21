@@ -10,4 +10,5 @@ pair_dist:
 	rm bin/*
 	ln -s $(HOMEPATH)/src/setup_rdf.py $(HOMEPATH)/bin/
 	ln -s $(HOMEPATH)/src/rdf_main.py $(HOMEPATH)/bin/
+	ln -s $(HOMEPATH)/src/dump_split.py $(HOMEPATH)/bin/
 	chmod 777 bin/*
