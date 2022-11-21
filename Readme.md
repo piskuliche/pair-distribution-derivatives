@@ -35,3 +35,9 @@ For questions, contact Zeke Piskulich (piskulichz@gmail.com)
 This code writes input files for [LAMMPS] that calculates the energies of various groups, decided by a distance cutoff.
 
 The essential idea of this calculation is to take the energy, H, and split it into interactions such that you get components from solute-solute, solute-close, solute-far, close-close, close-far, and far-far. Things work well when you choose a cutoff that makes close-far, far-far, and solute-far uncorrelated from the RDF. 
+
+This sets up the files to calculate the energies using lammps - and when used with the dump_split code, can seriously reduce the cost of the overall calculation.
+
+
+
+
