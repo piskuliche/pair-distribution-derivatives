@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-import numpy as np
-import argparse, os
+
 
 def Split_Main(Iargs):
     """Splits a LAMMPS dumpfile by frame
@@ -29,6 +28,10 @@ def Split_Main(Iargs):
 
 
 if __name__ == "__main__":
+
+    import numpy as np
+    import argparse, os
+
     parser = argparse.ArgumentParser(description='Calculate Radial Distribution Function')
     parser.add_argument('-trj',     default="dump.lammpsdump",type=str, help = 'Dump file')
     parser.add_argument('-fcount',  default=10000,          type=int,   help = 'Number of fps')

@@ -1,13 +1,6 @@
 #!/usr/bin/env python
 
-import numpy as np
-import argparse
-import pickle
-import math
-import MDAnalysis as mda
 
-from rdf_class import RDFS
-from MDAnalysis.analysis.leaflet import LeafletFinder
 
 
 
@@ -81,6 +74,15 @@ def Main(Iargs):
 
 
 if __name__ == "__main__":
+
+    import numpy as np
+    import argparse
+    import pickle
+    import math
+    import MDAnalysis as mda
+
+    from rdf_class import RDFS
+    from MDAnalysis.analysis.leaflet import LeafletFinder
     parser = argparse.ArgumentParser(description='Calculate Radial Distribution Function')
 
     parser.add_argument('-fcount',  default=10000,          type=int,   help = 'Number of fps')

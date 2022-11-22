@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-import glob, shutil
-import numpy as np
-import MDAnalysis as mda
+
 
 """
 
@@ -218,6 +216,9 @@ def Write_System(nmols,Iargs):
 
 if __name__ == "__main__":
     import argparse
+    import glob, shutil
+    import numpy as np
+    import MDAnalysis as mda
     parser = argparse.ArgumentParser(description='This code creates a series of files for lammps simulations that quickly rerun and re-calculate energies')
     parser.add_argument('-data',    default="equil.data",       type=str,help='Name of data file [default equil.data]')
     parser.add_argument('-dump',    default="dump.lammpsdump",  type=str,help='Name of dump file [default dump.lammpsdump]')
