@@ -1,9 +1,20 @@
 #!/usr/bin/env python
 import numpy as np
-import argparse
+import argparse, os
 
 def Split_Main(Iargs):
-    import os
+    """Splits a LAMMPS dumpfile by frame
+
+    This takes a LAMMPS custom dump file and splits it into separate frames. This can significantly
+    speed up the rerun command and lead to signficant savings (factor of orders of magnitude in wall-clock time).
+
+    Writes files to dump_dir in the current directory.
+
+    Args:
+        Iargs (Argparse object): Input arguments read through argparse.
+
+    """
+
     if not os.path.exists("./dump_dir"):
         os.makedirs("./dump_dir")
     with open(Iargs.trj,'r') as f:
@@ -15,10 +26,6 @@ def Split_Main(Iargs):
             outf = open('./dump_dir/dump.lammpsdump-%d'%fr,'w')
             for line in lines:
                 outf.write("%s\n" % line.strip())
-
-
-
-
 
 
 if __name__ == "__main__":

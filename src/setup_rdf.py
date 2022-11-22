@@ -4,6 +4,7 @@ import numpy as np
 import MDAnalysis as mda
 
 """
+
 Copyright November 2022 - Boston University
 
 This is a code that sets up an energy calculation for different groups, split up into "solute", "close", and "far" for each molecule in the system. It right now works for primarily lammps, but my goals is to extend this eventually to gromacs as well.
@@ -12,7 +13,16 @@ This is a code that sets up an energy calculation for different groups, split up
 
 
 def Main(Iargs):
+    #Chooses LAMMPS or Gromacs based on input arguments
     def LAMMPS_Main(Iargs):
+        """Calls the code for writing LAMMPS Files
+
+        This function calls the code for writing LAMMPS files for calculating the energies.
+
+        Args:
+            Iargs (ArgParse Object): These are the system input arguments used by argparse.
+
+        """
         u = mda.Universe(Iargs.data,Iargs.dump)
         atoms = u.select_atoms("all")
         for ts in u.trajectory[0:Iargs.nconfigs:Iargs.skip]:
@@ -25,8 +35,19 @@ def Main(Iargs):
             dr = Get_Distances(comr,L,Iargs.dim)
             Write_Groups(dr,current_frame,Iargs)
         Write_System(nmols,Iargs)
+
     def GMX_Main(Iargs):
+        """Calls the code for writing Gromacs Files
+
+        This function calls the code for writing GROMACS files for calculating the energies.
+
+        Args:
+            Iargs (ArgParse Object): These are the system input arguments used by argparse.
+        Todo:
+            * Implement these features for gromacs, may potentially require writing some new functions.
+        """
         exit("Error: Gromacs support not yet added")
+
     if Iargs.software == 'LAMMPS':
         LAMMPS_Main(Iargs)
     elif Iargs.software == 'GMX':
@@ -37,12 +58,21 @@ def Main(Iargs):
         
 
 def Get_Distances(r,L,dim=3):
-    """
-    This is a pretty complicated function to do a simple thing.
-    This code takes two vectors of size(m,3) and size(n,3)
-    Then it uses numpy broadcasting to calculate ALL the pairwise distances and outputs them in a matrix, sized (m,n)
-    Then I use it to calculate the distances.
-    (described here: https://stackoverflow.com/questions/60039982/numpy-python-vectorize-distance-function-to-calculate-pairwise-distance-of-2-ma/60040269#60040269)
+    """Calculates the self distance array between a vector and its other elements.
+
+    This uses numpy broadcasting to calculate ALL the pairwise distances and outputs them in a matrix of distances.
+
+    This is described here: 
+    https://stackoverflow.com/questions/60039982/numpy-python-vectorize-distance-function-to-calculate-pairwise-distance-of-2-ma/60040269#60040269
+    
+    Args:
+        r (array_like): Array of positions shape(natoms,dim)
+        L (array_like): Box dimension array shape(dim,)
+        dim (int): Box dimensionality [default=3]
+
+    Returns:
+        array_like: returns pairwise distances
+
     """
     vecdr = r[:,np.newaxis,:dim]-r[np.newaxis,:,:dim]
     vecdr = vecdr - np.multiply(L[:dim],np.round(np.divide(vecdr,L[:dim])))
@@ -50,22 +80,38 @@ def Get_Distances(r,L,dim=3):
     return dr
 
 def Sort_Distances(dr):
-    """
-    This function takes an array (dr) and sorts it by the last axis.
+    """ This function takes an array (dr) and sorts it by the last axis.
 
     It returns:
     1) the idx map of the sort
     2) the sorted dr array (sdr)
+
+    Args: 
+        dr (array_like): Pairwise distances array
+    Returns:
+        int: index map of the sorted array
+        array_like: Sorted array
+
     """
     natoms = np.shape(dr)[0]
     idx = np.argsort(dr,axis=-1,kind='quicksort')
-    #print(idx)
     sdr=np.take_along_axis(dr, idx, axis=-1)
     return idx,sdr
 
 def Prep_Dir(nmols,Iargs):
-    """
-    This function writes the computes needed to get all the energies fro each of the groups.
+    """Write files and directories to compute energies for LAMMPS
+    
+    This function prepares files to calculate the energies for each group (solute, close, and far) to 
+    get the energies. This makes any directories that do not already exist.
+
+    This writes files in includ_dir, and calc_dir, which are subdirs of Iargs.subdir.
+
+    For lammps, we use pe/tally because it is faster than compute group/group. 
+
+    Args:
+        nmols (int): Number of molecules
+        Iargs (Argparse, object): Input arguments read in through argparse.
+    
     """
     import os
     if not os.path.exists("./%s"%Iargs.subdir):
@@ -115,8 +161,15 @@ def Prep_Dir(nmols,Iargs):
 
 
 def Write_Groups(dr,frame,Iargs):
-    """
-    This writes the group occupancies out to a different file for each molcule.
+    """Writes occupancies in each group to a lammps file
+    
+    This writes the group occupancies out to a different file for each molcule. This is based on a distance cutoff,
+    which is stored in Iargs.cut
+
+    Args:
+        dr (array_like): Array of pairwise distances
+        frame (int): Timestep associated with the current frame
+        Iargs (Argparse, object): Input arguments read in through argparse.
     """
 
     nmols=np.shape(dr)[0]
@@ -141,8 +194,15 @@ def Write_Groups(dr,frame,Iargs):
 
 
 def Write_System(nmols,Iargs):
-    """
-    This section writes the includes into the simulation input file.
+    """This writes the includes into the simulation input file.
+
+    This takes a base system input file (Iargs.sys) and writes them into a separate system input file
+    for each molecule, so that lammps can easily calculate all of them.
+
+    Args:
+        nmols (int): Number of molecules
+        Iargs (Argparse, object): Input arguments read in through argparse.
+
     """
     print("Writing System Files")
     lines=None

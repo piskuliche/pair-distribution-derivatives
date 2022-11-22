@@ -12,9 +12,34 @@ For questions, contact Zeke Piskulich, piskulichz@gmail.com
 """
 
 class RDFS:
+    """Calculates and stores the RDF
+
+    This class calculates and stores the RDF, and can calculate the derivative of the RDF 
+    if it is provided with energies, calculated elsewhere.
+
+    Attributes:
+        dr (float): Bin width in A for RDF 
+        rmax (float): Cutoff distance in A for the RDF 
+        nbins (int): Number of RDF bins
+        dim (int): Number of dimensions 
+        rdfs (dict): Dictionary of lists, each dict element is a different molecule
+        xrdf (array): Numpy array of x values, used for plotting
+
+
+    """
+
     def __init__(self, dr=0.1, rmax=12, dim = 2):
-        """
-        Initializes data structures for the rdf
+        """Sets up the RDF class and builds attributes
+
+        This method takes user input and begins the initialization of the RDFS class.
+        This can be eventually extended, or split into smaller classes using class
+        methods.
+
+        Args:
+            dr (float): Bin width in A for RDF [default=0.1]
+            rmax (float): Cutoff distance in A for the RDF [default=12]
+            dim (int): Number of dimensions [default=2]
+
         """
         self.dr     = dr
         self.rmax   = rmax
@@ -23,14 +48,19 @@ class RDFS:
         self.rdfs   = {}
         self.xrdf   = np.arange(0,self.rmax,self.dr) + self.dr/2
 
-    def _calc_rdf(self, r, ts,ids,init=False):
-        """
-        This is a class for calculating the rdf. To do this, you provide it with positions (r),
-        the timestep (ts), and a list of molecule ids (ids). 
+    def calc_rdf(self, r, L, ids, init=False):
+        """Function to calculate the RDF
+
+        This is a class for calculating the rdf, given a set of positions.
+
+        Args:
+            r (array_like): Coordinates of the atoms for which the RDF is being calculated.
+            L (array_like): Box dimension array
+            ids (array_like): Array of molecule ids to act as dictionary keys for self.rdfs
+
         """
 
         natoms = np.shape(r)[0]
-        L      = ts.dimensions[:self.dim]
 
         h_real = np.zeros(self.nbins)
         rlo    = np.arange(0,self.rmax,self.dr)
@@ -53,30 +83,48 @@ class RDFS:
                     if dist < self.rmax:
                         counts[self._find_nearest(self.xrdf,dist)] += 1
             self.rdfs[ids[i]].append(counts/h_id)
-        return
 
-    def report_rdfs(self):
-        """
+
+    def report_rdfs(self,plot=False):
+        """Averages the RDF and plots it
+
         This function returns the radial distribution function averaged over all molecules and configurations in the 
         stored class. It also plots the RDF for your visual pleasure.
+
+        Args:
+            plot (bool): True, plots the RDF. False, does not plot. [default=False]
+
+        Returns:
+            array_like: RDF value as a function of distance
+
         """
         all_mols = []
         for key in self.rdfs:
             all_mols.append(np.average(self.rdfs[key],axis=0))
         av=np.average(all_mols,axis=0)
-        fig = plt.figure(dpi=300,figsize=(3,3))
-        plt.plot(self.xrdf,av)
-        plt.xlabel("r (Angstroms)")
-        plt.ylabel("g(r)")
-        plt.savefig("RDF_reported.png")
+        if plot == True:
+            fig = plt.figure(dpi=300,figsize=(3,3))
+            plt.plot(self.xrdf,av)
+            plt.xlabel("r (Angstroms)")
+            plt.ylabel("g(r)")
+            plt.savefig("RDF_reported.png")
         return av
 
-    def ener_weight(self,ener):
-        """
-        This function iterates through molecules and weights it by its energy fluctuation. 
+    def ener_weight(self,ener,plot=False):
+        """Weight RDF by energy fluctuation. 
 
-        This outputs a single array the same length as the rdf, which corresponds to the weighted RDF 
-        (and thus, the negated derivative)
+        This implements the fluctuation theory approach to calculating a derivative and applies it to
+        the RDF to obtain the negated derivative of the RDF.
+
+        Args:
+            ener (dict): Dictionary that stores energies for each molecule, for each configuration
+                Dictionary keys must match self.rdfs, and must have same number of configurations.
+            plot (bool): True, plots the derivative. False, does not plot. [default=False]
+        
+        Returns:
+            array_like: Array is the averaged, weighted RDF, which is equivalent to the negated 
+                derivative of the RDF.
+                
         """
         all_mols = []
         # This gives the average value of all the molecules - better average!
@@ -86,21 +134,31 @@ class RDFS:
             wrdfs = np.multiply(de[:,None],self.rdfs[key])
             all_mols.append(np.average(wrdfs,axis=0))
         av = np.average(all_mols,axis=0)
-        fig = plt.figure(dpi=300,figsize=(3,3))
-        plt.plot(self.xrdf,av)
-        plt.xlabel("r (Angstroms)")
-        plt.ylabel("g_H(r)")
-        plt.savefig("Deriv_RDF_reported.png")
+        if plot == True:
+            fig = plt.figure(dpi=300,figsize=(3,3))
+            plt.plot(self.xrdf,av)
+            plt.xlabel("r (Angstroms)")
+            plt.ylabel("g_H(r)")
+            plt.savefig("Deriv_RDF_reported.png")
         return av
     
     def lightweight_save(self,subdivide=5000,subdir="rdf_classes"):
-        """
+        """Splits the RDF class into smaller classes
+
         This class function takes the current class, and rebuilds it as a series of smaller classes. This is done
         by taking the total number of rdfs and dividing it into chunks of [subdivide] rdfs long. 
         
         For instance, if you have 50k rdfs, and subdivide is 5000, you get 10 class instances saved. 
 
         This lets you work with class objects, not in memory, which can be ideal. 
+
+        Args:
+            subdivide (int): Number of configurations per class instance [default=5000]
+                Total number of configurations should be evenly divided by this number.
+            subdir (str): Name of a directory to store the classes. This directory will be created
+                if it does not already exist.
+
+        
         """
         import pickle, os 
         # Make the subdirectory if it doesn't already exist.
@@ -124,12 +182,21 @@ class RDFS:
             pickle.dump(sub,open("%s/rdf_data_%d.pckl"%(subdir,count),'wb'))
             count += 1
         print("Lightweight Save Complete")
-        return
+
 
     def _pbc_dist(self, r1, r2, L):
-        """
-        This function takes two vectors and calculates the minimum image distance
-            Returns: minimum image distance
+        """Calculates minimum image distance
+
+        This function takes two vectors and calculates the minimum image distance by taking
+        periodic boundary conditions into account
+        
+        Args:
+            r1, r2 (array_like): two sets of coordinates of shape (3,)
+            L (array_like): Box dimension array
+
+        Returns: 
+            float: Minimum image distance
+
         """
         dr, drsq = np.zeros(self.dim), 0.0
         for i in range(self.dim):
@@ -140,9 +207,15 @@ class RDFS:
         return dist
 
     def _find_nearest(self,array, value):
-        """
-        Finds the nearest location in array to value.
-            Returns: index of location
+        """Find nearest location to the current value
+
+        Args:
+            array (array_like): Array to find value in
+            value (float): Value to be located
+
+        Returns: 
+            int: Index in array for which value is located
+            
         """
         array   = np.asarray(array)
         idx     = (np.abs(array-value)).argmin()
