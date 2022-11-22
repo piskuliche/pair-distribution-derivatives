@@ -64,9 +64,11 @@ class RDFS:
         for key in self.rdfs:
             all_mols.append(np.average(self.rdfs[key],axis=0))
         av=np.average(all_mols,axis=0)
-        fig = plt.figure()
+        fig = plt.figure(dpi=300,figsize=(3,3))
         plt.plot(self.xrdf,av)
-        plt.show()
+        plt.xlabel("r (Angstroms)")
+        plt.ylabel("g(r)")
+        plt.savefig("RDF_reported.png")
         return av
 
     def ener_weight(self,ener):
@@ -77,12 +79,18 @@ class RDFS:
         (and thus, the negated derivative)
         """
         all_mols = []
+        # This gives the average value of all the molecules - better average!
+        eav = np.average(list(ener.values()))
         for key in self.rdfs:
-            eav = np.average(ener[key])
             de = ener[key] - eav
             wrdfs = np.multiply(de[:,None],self.rdfs[key])
             all_mols.append(np.average(wrdfs,axis=0))
         av = np.average(all_mols,axis=0)
+        fig = plt.figure(dpi=300,figsize=(3,3))
+        plt.plot(self.xrdf,av)
+        plt.xlabel("r (Angstroms)")
+        plt.ylabel("g_H(r)")
+        plt.savefig("Deriv_RDF_reported.png")
         return av
     
     def lightweight_save(self,subdivide=5000,subdir="rdf_classes"):
