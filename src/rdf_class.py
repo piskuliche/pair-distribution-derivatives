@@ -102,6 +102,7 @@ class RDFS:
         for key in self.rdfs:
             all_mols.append(np.average(self.rdfs[key],axis=0))
         av=np.average(all_mols,axis=0)
+        
         if plot == True:
             fig = plt.figure(dpi=300,figsize=(3,3))
             plt.plot(self.xrdf,av)
