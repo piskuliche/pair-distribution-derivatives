@@ -121,7 +121,7 @@ class Energies:
         """
         e_list = []
         for key in self.mol_ener[compstr]:
-            e_list.append(self.mol_ener[compstr][key])
+            e_list.append(self.mol_ener[compstr][key][_start:_stop:_skip])
         eav = np.average(e_list)
         estd = np.std(e_list)
         molav = np.average(e_list,axis=0)
