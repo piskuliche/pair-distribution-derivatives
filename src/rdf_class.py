@@ -96,35 +96,40 @@ class RDFS:
 
         Returns:
             array_like: RDF value as a function of distance
-
+            array_like: 95% CI for the RDF based on nblocks
         """
         all_mols = []
         for key in self.rdfs:
-            all_mols.append(np.average(self.rdfs[key],axis=0))
-        av=np.average(all_mols,axis=0)
+            all_mols.append(self.rdfs[key])
+        av_over_mol = np.average(all_mols,axis=0)
+        av_total = np.average(av_over_mol,axis=0)
+        err = self._Error(av_over_mol,nblocks=5)
         
         if plot == True:
             fig = plt.figure(dpi=300,figsize=(3,3))
-            plt.plot(self.xrdf,av)
+            plt.plot(self.xrdf,av_total)
             plt.xlabel("r (Angstroms)")
             plt.ylabel("g(r)")
             plt.savefig("RDF_reported.png")
-        return av
+        return av_total, err
 
-    def ener_weight(self,ener,plot=False):
+    def mol_ener_weight(self, ener, nblocks=1, plot=False ):
         """Weight RDF by energy fluctuation. 
 
         This implements the fluctuation theory approach to calculating a derivative and applies it to
-        the RDF to obtain the negated derivative of the RDF.
+        the RDF to obtain the negated derivative of the RDF. This does energy weighting by molecule, rather
+        than for the whole system. If you want to do the whole system, use ener_weight instead.
 
         Args:
             ener (dict): Dictionary that stores energies for each molecule, for each configuration
                 Dictionary keys must match self.rdfs, and must have same number of configurations.
+            nblocks (int): Number of blocks for block averaging (default=1)
             plot (bool): True, plots the derivative. False, does not plot. [default=False]
         
         Returns:
             array_like: Array is the averaged, weighted RDF, which is equivalent to the negated 
                 derivative of the RDF.
+            array_like: 95% CI of the derivative of the RDF.
                 
         """
         all_mols = []
@@ -133,15 +138,18 @@ class RDFS:
         for key in self.rdfs:
             de = ener[key] - eav
             wrdfs = np.multiply(de[:,None],self.rdfs[key])
-            all_mols.append(np.average(wrdfs,axis=0))
-        av = np.average(all_mols,axis=0)
+            all_mols.append(wrdfs)
+        av_over_mol = np.average(all_mols,axis=0)
+        av_total = np.average(av_over_mol,axis=0)
+        err = self._Error(av_over_mol,nblocks=5)
+
         if plot == True:
             fig = plt.figure(dpi=300,figsize=(3,3))
-            plt.plot(self.xrdf,av)
+            plt.plot(self.xrdf,av_total)
             plt.xlabel("r (Angstroms)")
             plt.ylabel("g_H(r)")
             plt.savefig("Deriv_RDF_reported.png")
-        return av
+        return av_total, err
     
     def lightweight_save(self,subdivide=5000,subdir="rdf_classes"):
         """Splits the RDF class into smaller classes
@@ -207,7 +215,7 @@ class RDFS:
         dist = np.sqrt(drsq)
         return dist
 
-    def _find_nearest(self,array, value):
+    def _find_nearest(self, array, value):
         """Find nearest location to the current value
 
         Args:
@@ -221,3 +229,26 @@ class RDFS:
         array   = np.asarray(array)
         idx     = (np.abs(array-value)).argmin()
         return idx
+
+    def _Error(self, data, nblocks=5):
+        """Calculates the block average of a 2D array
+
+        This function takes a 2D array (configs, M), and splits configs into
+        nblocks blocks. 
+
+        Args:
+            data (array_like): 2D Array of data values of shape(configs,M)
+            nblocks (int): Number of blocks for block averaging
+
+        Returns:
+            array_like: 95% CI of shape(M)
+        """
+        from scipy import stats
+        if nblocks > 1:
+            t_val=stats.t.ppf(0.975,nblocks-1)/np.sqrt(nblocks)
+            blocks = np.average(np.array_split(data,nblocks),axis=1)
+            err = np.std(blocks,axis=0)*t_val
+        else:
+            err = np.zeros(np.shape(data)[-1])
+        return err
+        
