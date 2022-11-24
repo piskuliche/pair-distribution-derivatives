@@ -12,6 +12,14 @@ src.dump\_split module
    :undoc-members:
    :show-inheritance:
 
+src.energy\_class module
+------------------------
+
+.. automodule:: src.energy_class
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 src.rdf\_class module
 ---------------------
 

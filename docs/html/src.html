@@ -65,6 +65,121 @@ speed up the rerun command and lead to signficant savings (factor of orders of m
 </dd></dl>
 
 </div>
+<div class="section" id="module-src.energy_class">
+<span id="src-energy-class-module"></span><h2>src.energy_class module<a class="headerlink" href="#module-src.energy_class" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.energy_class.Energies">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.energy_class.</span></span><span class="sig-name descname"><span class="pre">Energies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nmols</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.energy_class.Energies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to store energies for energy weighting</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.energy_class.Energies.mol_ener">
+<span class="sig-name descname"><span class="pre">mol_ener</span></span><a class="headerlink" href="#src.energy_class.Energies.mol_ener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of energy values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.energy_class.Energies.add_mol_ener">
+<span class="sig-name descname"><span class="pre">add_mol_ener</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ss'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pair.compute'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LAMMPS'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.energy_class.Energies.add_mol_ener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add energies from a file to the self.mol_ener dictionary</p>
+<p>This function reads in energies from the file and gets it into the molecular energy container such that it
+could be used for later weighting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compstr</strong> (<em>str</em>) – String name for the energy component</p></li>
+<li><p><strong>col</strong> (<em>int</em>) – Integer number for column from which energy is read.</p></li>
+<li><p><strong>fname</strong> (<em>str</em>) – Base name of energy file.</p></li>
+<li><p><strong>program</strong> (<em>str</em>) – Which MD program generated the files.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.energy_class.Energies.gen_default">
+<span class="sig-name descname"><span class="pre">gen_default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pair.compute'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LAMMPS'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.energy_class.Energies.gen_default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a default set of energies</p>
+<p>This function assumes that you want to split your energies by solute, close and far, and the intermingling of
+these groups, rather than something more complex. It reads all the files, and generates the dictionary with them in it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) – Base name of energy file.</p></li>
+<li><p><strong>program</strong> (<em>str</em>) – Which MD program generated the files.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.energy_class.Energies.plot_ener_dist">
+<span class="sig-name descname"><span class="pre">plot_ener_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ss'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_nbins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(3,</span> <span class="pre">3)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.energy_class.Energies.plot_ener_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the energy distributions</p>
+<p>This function plots the energy distributions using matplotlib.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compstr</strong> (<em>str</em>) – String name for the energy component [default=’ss’]</p></li>
+<li><p><strong>_nbins</strong> (<em>int</em>) – Number of histogram bins [default=100]</p></li>
+<li><p><strong>_dpi</strong> (<em>int</em>) – DPI for plot [default=300]</p></li>
+<li><p><strong>_figsize</strong> (<em>tuple</em>) – Figure size dimensions [default=(3,3)]</p></li>
+<li><p><strong>savefile</strong> (<em>bool</em>) – Save to a file rather than print to screen [default=False]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.energy_class.Energies.stats">
+<span class="sig-name descname"><span class="pre">stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ss'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_skip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.energy_class.Energies.stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates and reports averages and statistics</p>
+<p>This operates statistics on a particular energy type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compstr</strong> (<em>str</em>) – String name for the energy component [default ‘ss’]</p></li>
+<li><p><strong>_start</strong> (<em>int</em>) – index to start splice [default=0]</p></li>
+<li><p><strong>_stop</strong> (<em>int</em>) – index to stop splice [default=-1]</p></li>
+<li><p><strong>_skip</strong> (<em>int</em>) – Skip between indices [default=1]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.energy_class.Energies.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ss'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_skip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.energy_class.Energies.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Outputs the energy values, and splices them any which way</p>
+<p>This is just a simple way of pulling different energies (and subdividing them) into more
+manageable chunks. This is useful when the RDF class has been subdivided into smaller
+class objects, while retaining a majority of the energies in one location.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compstr</strong> (<em>str</em>) – String name for the energy component [default ‘ss’]</p></li>
+<li><p><strong>_start</strong> (<em>int</em>) – index to start splice [default=0]</p></li>
+<li><p><strong>_stop</strong> (<em>int</em>) – index to stop splice [default=-1]</p></li>
+<li><p><strong>_skip</strong> (<em>int</em>) – Skip between indices [default=1]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Energy values in a dictionary of arrays.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-src.rdf_class">
 <span id="src-rdf-class-module"></span><h2>src.rdf_class module<a class="headerlink" href="#module-src.rdf_class" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
@@ -362,6 +477,18 @@ for each molecule, so that lammps can easily calculate all of them.</p>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-src.dump_split">src.dump_split module</a><ul>
 <li><a class="reference internal" href="#src.dump_split.Split_Main"><code class="docutils literal notranslate"><span class="pre">Split_Main()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-src.energy_class">src.energy_class module</a><ul>
+<li><a class="reference internal" href="#src.energy_class.Energies"><code class="docutils literal notranslate"><span class="pre">Energies</span></code></a><ul>
+<li><a class="reference internal" href="#src.energy_class.Energies.mol_ener"><code class="docutils literal notranslate"><span class="pre">Energies.mol_ener</span></code></a></li>
+<li><a class="reference internal" href="#src.energy_class.Energies.add_mol_ener"><code class="docutils literal notranslate"><span class="pre">Energies.add_mol_ener()</span></code></a></li>
+<li><a class="reference internal" href="#src.energy_class.Energies.gen_default"><code class="docutils literal notranslate"><span class="pre">Energies.gen_default()</span></code></a></li>
+<li><a class="reference internal" href="#src.energy_class.Energies.plot_ener_dist"><code class="docutils literal notranslate"><span class="pre">Energies.plot_ener_dist()</span></code></a></li>
+<li><a class="reference internal" href="#src.energy_class.Energies.stats"><code class="docutils literal notranslate"><span class="pre">Energies.stats()</span></code></a></li>
+<li><a class="reference internal" href="#src.energy_class.Energies.values"><code class="docutils literal notranslate"><span class="pre">Energies.values()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-src.rdf_class">src.rdf_class module</a><ul>
