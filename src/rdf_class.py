@@ -6,9 +6,11 @@ import matplotlib.pyplot as plt
 """
 Copyright November 2022, Boston University
 
-This is a class that stores information about RDFs for each molecule. It also contains class methods to weight the RDF by energies either on anindividual basis, or on a collective basis. 
+This is a class that stores information about RDFs for each molecule. It also contains class 
+methods to weight the RDF by energies either on anindividual basis, or on a collective basis. 
 
 For questions, contact Zeke Piskulich, piskulichz@gmail.com
+
 """
 
 class RDFS:
@@ -97,6 +99,7 @@ class RDFS:
         Returns:
             array_like: RDF value as a function of distance
             array_like: 95% CI for the RDF based on nblocks
+
         """
         all_mols = []
         for key in self.rdfs:
@@ -121,7 +124,7 @@ class RDFS:
         than for the whole system. If you want to do the whole system, use ener_weight instead.
 
         Args:
-            ener (dict): Dictionary that stores energies for each molecule, for each configuration
+            ener (dict): Dictionary that stores energies for each molecule, for each configuration. 
                 Dictionary keys must match self.rdfs, and must have same number of configurations.
             nblocks (int): Number of blocks for block averaging (default=1)
             plot (bool): True, plots the derivative. False, does not plot. [default=False]
@@ -167,7 +170,6 @@ class RDFS:
             subdir (str): Name of a directory to store the classes. This directory will be created
                 if it does not already exist.
 
-        
         """
         import pickle, os 
         # Make the subdirectory if it doesn't already exist.
@@ -242,6 +244,7 @@ class RDFS:
 
         Returns:
             array_like: 95% CI of shape(M)
+
         """
         from scipy import stats
         if nblocks > 1:
