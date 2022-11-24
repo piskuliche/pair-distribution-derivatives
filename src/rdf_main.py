@@ -48,7 +48,7 @@ def Main(Iargs):
             
         """
         u = mda.Universe(Iargs.data, Iargs.trj)
-        sel1 = u.select_atoms("Iargs.sel1")
+        sel1 = u.select_atoms("%s"%Iargs.sel1)
         all_rdfs = RDFS(dr = Iargs.dr, rmax = Iargs.rmax, dim = Iargs.dim)
 
         start, stop = Iargs.seg*Iargs.fcount, (Iargs.seg+1)*Iargs.fcount
@@ -65,6 +65,7 @@ def Main(Iargs):
             count += 1
         pickle.dump(all_rdfs,open("all_rdfs-%d.pckl"%Iargs.seg,'wb'))
         return
+    print(Iargs.lipids)
     if Iargs.lipids == True:
         LIPIDS_Main(Iargs)
     else:
@@ -96,8 +97,11 @@ if __name__ == "__main__":
     parser.add_argument('-seg',     default=0,              type=int,   help = 'Which segment to do?')
     parser.add_argument('-skip',    default=1,              type=int,   help = 'Frames to skip')
     parser.add_argument('-software',default='LAMMPS',       type=str,   help = 'MD Software Package')
-    parser.add_argument('-lipids',  default=True,          type=bool,  help = 'True or False, incorporates leaflet info')
-    
+    parser.add_argument('-sel1',    default="type 1",       type=str,   help = 'Selection')
+    parser.add_argument('--lipids', dest='lipids', action='store_true')
+    parser.add_argument('--no-lipids', dest='lipids', action='store_false')
+    parser.set_defaults(lipids=True)
+
     Iargs = parser.parse_args()
 
     Main(Iargs)
