@@ -31,6 +31,7 @@ class Energies:
             col (int): Integer number for column from which energy is read.
             fname (str): Base name of energy file.
             program (str): Which MD program generated the files.
+
         """
         if compstr in self.mol_ener:
             raise ValueError("%s already exists within class."%compstr)
@@ -118,6 +119,7 @@ class Energies:
             _start (int): index to start splice [default=0]
             _stop (int): index to stop splice [default=-1]
             _skip (int): Skip between indices [default=1]
+            
         """
         e_list = []
         for key in self.mol_ener[compstr]:
