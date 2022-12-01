@@ -53,7 +53,7 @@ class RDFS:
     def calc_rdf(self, r, L, ids, init=False):
         """Function to calculate the RDF
 
-        This is a class for calculating the rdf, given a set of positions.
+        This is a class for calculating the rdf, given a set of positions. Note that self.dim chooses between a 2D or 3D RDF.
 
         Args:
             r (array_like): Coordinates of the atoms for which the RDF is being calculated.
@@ -68,7 +68,12 @@ class RDFS:
         rlo    = np.arange(0,self.rmax,self.dr)
         rhi    = rlo + self.dr
 
-        h_id = math.pi*natoms/(L[0]*L[1])*(rhi**2.-rlo**2.)
+        # Set h_id based on the dimensionality
+        h_id = 1.0
+        if self.dim == 2:   
+            h_id = math.pi*natoms/(L[0]*L[1])*(rhi**2.-rlo**2.)
+        elif self.dim == 3:
+            h_id = 4/3*math.pi*natoms/(L[0]*L[1]*L[2])*(rhi**3. - rlo**3.)
         
         # Builds the dictionary if init is true
         if init == True:
