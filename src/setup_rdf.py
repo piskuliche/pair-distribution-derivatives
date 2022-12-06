@@ -133,12 +133,20 @@ def Prep_Dir(nmols,Iargs):
         fi.write("group %s molecule 0\n"%grp)
 
     # Pairwise Components
+    """
     fi.write("compute sspair solu pe/tally solu\n")
     fi.write("compute ccpair close pe/tally close\n")
     fi.write("compute ffpair far pe/tally far\n")
     fi.write("compute scpair solu pe/tally close\n")
     fi.write("compute sfpair solu pe/tally far\n")
     fi.write("compute cfpair close pe/tally far\n")
+    """
+    fi.write("compute sspair solu group/group solu kspace yes pair yes\n")
+    fi.write("compute ccpair close group/group close kspace yes pair yes\n")
+    fi.write("compute ffpair far group/group far kspace yes pair yes\n")
+    fi.write("compute scpair solu group/group close kspace yes pair yes\n")
+    fi.write("compute sfpair solu group/group far kspace yes pair yes\n")
+    fi.write("compute cfpair close group/group far kspace yes pair yes\n")
 
 
     # Per Atom components
@@ -250,7 +258,7 @@ def Write_Task(Iargs, nmols = 343, queue_engine="TORQUE", nmol_per_task=1, hours
     stop_array = np.ceil(nmols/nmol_per_task)
     
     if queue_engine == "TORQUE":
-        with open("submit_task.sh",'w') as f:
+        with open("./%s/submit_task.sh" % Iargs.subdir,'w') as f:
             f.write("#!/bin/bash\n")
             f.write("#\n")
             f.write("#$ -l h_rt=%d:00:00\n"%hours)
