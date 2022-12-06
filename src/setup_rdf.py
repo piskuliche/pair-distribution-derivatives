@@ -243,6 +243,9 @@ def Write_Task(Iargs, nmols = 343, queue_engine="TORQUE", nmol_per_task=1, hours
             Options are TORQUE, or SLURM
         nmol_per_task (int): Number of molecules per task
 
+    ToDo:
+        SLURM Support
+
     """
     try:
         assert type(nmol_per_task) == int
