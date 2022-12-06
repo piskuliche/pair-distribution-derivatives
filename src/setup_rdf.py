@@ -23,6 +23,7 @@ def Main(Iargs):
         """
         u = mda.Universe(Iargs.data,Iargs.dump)
         atoms = u.select_atoms("all")
+        nmols=0
         for ts in u.trajectory[0:Iargs.nconfigs:Iargs.skip]:
             current_frame = ts.frame*Iargs.framesep + Iargs.startframe
             L = ts.dimensions[:3]
@@ -33,6 +34,7 @@ def Main(Iargs):
             dr = Get_Distances(comr,L,Iargs.dim)
             Write_Groups(dr,current_frame,Iargs)
         Write_System(nmols,Iargs)
+        Write_Task(Iargs, nmols = nmols, queue_engine="TORQUE", nmol_per_task=100, hours=2, procs=4)
 
     def GMX_Main(Iargs):
         """Calls the code for writing Gromacs Files
@@ -171,19 +173,27 @@ def Write_Groups(dr,frame,Iargs):
     """
 
     nmols=np.shape(dr)[0]
+    mols = np.arange(0,nmols)
     for i in range(nmols):
         fi = open("./%s/include_dir/include.groups-%d"%(Iargs.subdir,i),'a')
         close=np.where(dr[i]<Iargs.cut)[-1]
         for grp in ["lt","solu","close","far"]:
             fi.write("group %s clear\n"%grp)
         fi.write("\n")
-        fi.write("group lt molecule ")
+        fi.write("group close molecule ")
         for j in close:
-            fi.write("%d "% (j+1))
+            if j != i: fi.write("%d "% (j+1)) # Ignore i from close
         fi.write("\n")
         fi.write("group solu molecule %d\n"%(i+1))
-        fi.write("group close subtract lt solu\n")
-        fi.write("group far subtract all lt solu\n")
+        #fi.write("group close subtract lt solu\n")
+        #fi.write("group far subtract all lt solu\n")
+        
+        fi.write("group far molecule ")
+        for j in mols:
+            if j not in close:
+                fi.write("%d " % (j+1))
+        fi.write("\n")
+
         fi.write("\n")
         fi.write('print "beginning rerun %d"\n'%frame)
         fi.write("rerun ../../dump_dir/dump.lammpsdump-%d first %d last %d dump x y z\n" % (frame,frame,frame))
@@ -213,6 +223,97 @@ def Write_System(nmols,Iargs):
             g.write("log logs/log.%d.out\n"%i)
             g.write("include ../include_dir/include.computes\n")
             g.write("include ../include_dir/include.groups-%d\n"%i)
+    
+def Write_Task(Iargs, nmols = 343, queue_engine="TORQUE", nmol_per_task=1, hours=2, procs=4):
+    """This is a simple function to write a submit script
+
+    Writes a file, called submit_task.sh
+
+    Args:
+        Iargs (argparse): Input arguments object from argparse
+        queue_engine (str): What queue engine should it write for?
+            Options are TORQUE, or SLURM
+        nmol_per_task (int): Number of molecules per task
+
+    """
+    try:
+        assert type(nmol_per_task) == int
+    except:
+        raise AssertionError("Error: nmol_per_task must be an integer")
+    
+    try:
+        assert queue_engine in ["SLURM","TORQUE"]
+    except:
+        raise AssertionError("Error: queue_engine %s is not yet supported" % queue_engine)
+    import numpy as np
+
+    stop_array = np.ceil(nmols/nmol_per_task)
+    
+    if queue_engine == "TORQUE":
+        with open("submit_task.sh",'w') as f:
+            f.write("#!/bin/bash\n")
+            f.write("#\n")
+            f.write("#$ -l h_rt=%d:00:00\n"%hours)
+            f.write("#$ -j y\n")
+            f.write("#$ -N ener-task\n")
+            f.write("#$ -pe omp %d\n" % procs)
+            f.write("#$ -V\n")
+            if stop_array > 1: f.write("#$ -t 1-%d\n" % stop_array)
+            f.write("\n")
+
+            if stop_array > 1: 
+                f.write("fid=$((SGE_TASK_ID-1))\n\n")
+            else:
+                f.write("fid=0")
+
+            f.write("module load gcc/8.3.0\n")
+            f.write("module load openmpi/3.1.4_gnu-8.1\n")
+            f.write("module load fftw/3.3.8\n")
+            f.write("module load lammps/3Mar2020\n")
+            f.write("\n")
+
+            f.write("cd calc_dir\n")
+            f.write("for i in {1..%d}; do\n" % nmol_per_task)
+            f.write("   molid=$((fid*%d + i - 1))\n" % nmol_per_task)
+            f.write("   if [ ${molid} -gt %d ]; then\n" % nmols)
+            f.write("       break\n")
+            f.write("   fi\n")
+            f.write("   mpirun lmp_mpi -in system.in-${molid}\n")
+            f.write("done\n")
+            f.write("cd -\n")
+
+    elif queue_engine == "SLURM":
+        raise ValueError("Error: SLURM Support has not been fully added")
+        with open("submit_task.sh",'w') as f:
+            f.write("#!/bin/bash\n")
+            f.write("#SBATCH -l h_rt=%d:00:00\n"%hours)
+            f.write("#SBATCH -j y\n")
+            f.write("#SBATCH -N ener-task\n")
+            f.write("#SBATCH -pe omp %d\n" % procs)
+            f.write("#SBATCH -V\n")
+            if stop_array > 1: f.write("#SBATCH -t 1-%d\n" % stop_array)
+            f.write("\n")
+
+            if stop_array > 1: 
+                f.write("fid=$((SLURM_ARRAY_TASK_ID-1))\n\n")
+            else:
+                f.write("fid=0")
+
+            f.write("module load gcc/8.3.0\n")
+            f.write("module load openmpi/3.1.4_gnu-8.1\n")
+            f.write("module load fftw/3.3.8\n")
+            f.write("module load lammps/3Mar2020\n")
+            f.write("\n")
+
+            f.write("cd calc_dir\n")
+            f.write("for i in {1..%d}; do\n" % nmol_per_task)
+            f.write("   molid=$((fid*%d + i - 1))\n" % nmol_per_task)
+            f.write("   if [ ${molid} -gt %d ]; then\n" % nmols)
+            f.write("       break\n")
+            f.write("   fi\n")
+            f.write("   mpirun lmp_mpi -in system.in-${molid}\n")
+            f.write("done\n")
+            f.write("cd -\n")
 
 if __name__ == "__main__":
     import argparse
