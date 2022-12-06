@@ -259,7 +259,7 @@ if it is provided with energies, calculated elsewhere.</p>
 <dt class="sig sig-object py" id="src.rdf_class.RDFS.calc_rdf">
 <span class="sig-name descname"><span class="pre">calc_rdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.rdf_class.RDFS.calc_rdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to calculate the RDF</p>
-<p>This is a class for calculating the rdf, given a set of positions.</p>
+<p>This is a class for calculating the rdf, given a set of positions. Note that self.dim chooses between a 2D or 3D RDF.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -457,6 +457,23 @@ for each molecule, so that lammps can easily calculate all of them.</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="src.setup_rdf.Write_Task">
+<span class="sig-prename descclassname"><span class="pre">src.setup_rdf.</span></span><span class="sig-name descname"><span class="pre">Write_Task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Iargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">343</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue_engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'TORQUE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmol_per_task</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">procs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.setup_rdf.Write_Task" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a simple function to write a submit script</p>
+<p>Writes a file, called submit_task.sh</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Iargs</strong> (<em>argparse</em>) – Input arguments object from argparse</p></li>
+<li><p><strong>queue_engine</strong> (<em>str</em>) – What queue engine should it write for?
+Options are TORQUE, or SLURM</p></li>
+<li><p><strong>nmol_per_task</strong> (<em>int</em>) – Number of molecules per task</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="section" id="module-src">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src" title="Permalink to this heading">¶</a></h2>
@@ -518,6 +535,7 @@ for each molecule, so that lammps can easily calculate all of them.</p>
 <li><a class="reference internal" href="#src.setup_rdf.Sort_Distances"><code class="docutils literal notranslate"><span class="pre">Sort_Distances()</span></code></a></li>
 <li><a class="reference internal" href="#src.setup_rdf.Write_Groups"><code class="docutils literal notranslate"><span class="pre">Write_Groups()</span></code></a></li>
 <li><a class="reference internal" href="#src.setup_rdf.Write_System"><code class="docutils literal notranslate"><span class="pre">Write_System()</span></code></a></li>
+<li><a class="reference internal" href="#src.setup_rdf.Write_Task"><code class="docutils literal notranslate"><span class="pre">Write_Task()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-src">Module contents</a></li>

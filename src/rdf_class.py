@@ -27,7 +27,6 @@ class RDFS:
         rdfs (dict): Dictionary of lists, each dict element is a different molecule
         xrdf (array): Numpy array of x values, used for plotting
 
-
     """
 
     def __init__(self, dr=0.1, rmax=12, dim = 2):
