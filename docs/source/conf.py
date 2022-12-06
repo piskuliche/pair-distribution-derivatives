@@ -6,10 +6,10 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'pair-dist-deriv'
+project = 'rdf_derivative'
 copyright = '2022, Zeke Piskulich'
 author = 'Zeke Piskulich'
-release = 'v1.0'
+release = 'v1.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
