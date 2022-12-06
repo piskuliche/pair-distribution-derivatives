@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'rdf_derivative'
+project = 'pair-distribution-derivatives'
 copyright = '2022, Zeke Piskulich'
 author = 'Zeke Piskulich'
 release = 'v1.1'
