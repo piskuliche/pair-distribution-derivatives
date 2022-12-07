@@ -8,6 +8,7 @@ setup(name='pair_distribution_derivatives',
       author='Zeke Piskulich',
       author_email='piskulichz@gmail.com',
       url='https://github.com/piskuliche/pair-distribution-derivatives',
-      packages=['rdfderiv'],
+      packages=['pair_distribution_derivatives'],
+      package_dir={'pair_distribution_derivatives':'pair_distribution_derivatives'}
       
      )
