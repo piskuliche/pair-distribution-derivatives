@@ -50,7 +50,7 @@ class Energies:
         but must be a full logfile with only a single run command, otherwise breaks
 
         Args:
-            n (int): Number of windows
+            fname (str): Name of the logfile.
 
         """
         data={}
@@ -78,7 +78,6 @@ class Energies:
                     print("start")
 
         for key in data:
-            data[key].pop()
             np.savetxt("%s_init.out" % key, np.c_[data[key]])
             self.tot_ener[key] = data[key]
             if key == "Volume":

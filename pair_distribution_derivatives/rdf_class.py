@@ -144,7 +144,7 @@ class RDFS:
             all_mols.append(self.rdfs[key])
         av_over_mol = np.average(all_mols,axis=0)
         de = totener - eav
-        wrdf = np.multiply(de,av_over_mol)
+        wrdf = np.multiply(de[:,None],av_over_mol)
         av_total = np.average(wrdf,axis=0)
 
         err = self._Error(av_over_mol,nblocks=nblocks)
