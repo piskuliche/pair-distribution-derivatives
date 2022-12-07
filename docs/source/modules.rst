@@ -1,7 +1,7 @@
-pair-distribution-derivatives
+pair_distribution_derivatives
 =============================
 
 .. toctree::
    :maxdepth: 4
 
-   pair-distribution-derivatives
+   pair_distribution_derivatives

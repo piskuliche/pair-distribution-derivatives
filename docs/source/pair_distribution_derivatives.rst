@@ -1,45 +1,45 @@
-pair\-distribution\-derivatives package
+pair\_distribution\_derivatives package
 =======================================
 
 Submodules
 ----------
 
-pair\-distribution\-derivatives.dump\_split module
+pair\_distribution\_derivatives.dump\_split module
 --------------------------------------------------
 
-.. automodule:: pair-distribution-derivatives.dump_split
+.. automodule:: pair_distribution_derivatives.dump_split
    :members:
    :undoc-members:
    :show-inheritance:
 
-pair\-distribution\-derivatives.energy\_class module
+pair\_distribution\_derivatives.energy\_class module
 ----------------------------------------------------
 
-.. automodule:: pair-distribution-derivatives.energy_class
+.. automodule:: pair_distribution_derivatives.energy_class
    :members:
    :undoc-members:
    :show-inheritance:
 
-pair\-distribution\-derivatives.rdf\_class module
+pair\_distribution\_derivatives.rdf\_class module
 -------------------------------------------------
 
-.. automodule:: pair-distribution-derivatives.rdf_class
+.. automodule:: pair_distribution_derivatives.rdf_class
    :members:
    :undoc-members:
    :show-inheritance:
 
-pair\-distribution\-derivatives.rdf\_main module
+pair\_distribution\_derivatives.rdf\_main module
 ------------------------------------------------
 
-.. automodule:: pair-distribution-derivatives.rdf_main
+.. automodule:: pair_distribution_derivatives.rdf_main
    :members:
    :undoc-members:
    :show-inheritance:
 
-pair\-distribution\-derivatives.setup\_rdf module
+pair\_distribution\_derivatives.setup\_rdf module
 -------------------------------------------------
 
-.. automodule:: pair-distribution-derivatives.setup_rdf
+.. automodule:: pair_distribution_derivatives.setup_rdf
    :members:
    :undoc-members:
    :show-inheritance:
@@ -47,7 +47,7 @@ pair\-distribution\-derivatives.setup\_rdf module
 Module contents
 ---------------
 
-.. automodule:: pair-distribution-derivatives
+.. automodule:: pair_distribution_derivatives
    :members:
    :undoc-members:
    :show-inheritance:
