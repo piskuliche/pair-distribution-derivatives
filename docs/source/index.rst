@@ -10,7 +10,7 @@ Welcome to Pair Distribution Derivatives's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-modules
+pair-distribution-derivatives
 
 Indices and tables
 ==================
