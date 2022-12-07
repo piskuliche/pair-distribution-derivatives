@@ -119,13 +119,52 @@ class RDFS:
             plt.ylabel("g(r)")
             plt.savefig("RDF_reported.png")
         return av_total, err
+    
+    def total_ener_weight(self, totener, nblocks=1, plot=False):
+        """Weight RDF by total energy fluctuation.
+
+        This implements the fluctuation theory approach to calculating a derivative and applies it to the
+        RDF to obtain the negated derivative of the RDF. This does energy weighting by total energies, rather
+        than for individual moelucles. If you want to do individual weighting, use mol_ener_weight instead.
+
+        Args:
+            totener (array_like): Array of systemwide energies, must match number of configs.
+            nblocks (int): Number of blocks for block averaging [default=1]
+            plot (bool): True, plots the derivative. False, does not plot. [default=False]
+
+        Returns:
+            array_like: Array is the averaged, weighted RDF, which is equivalent to the negated
+                derivative of the RDF.
+
+        """
+
+        eav = np.average(totener)
+        all_mols=[]
+        for key in self.rdfs:
+            all_mols.append(self.rdfs[key])
+        av_over_mol = np.average(all_mols,axis=0)
+        de = totener - eav
+        wrdf = np.multiply(de,av_over_mol)
+        av_total = np.average(wrdf,axis=0)
+
+        err = self._Error(av_over_mol,nblocks=nblocks)
+
+        if plot == True:
+            fig = plt.figure(dpi=300,figsize=(3,3))
+            plt.plot(self.xrdf, wrdf)
+            plt.xlabel("r (Angstroms)")
+            plt.ylabel("g_H(r)")
+            plt.savefig("Deriv_RDF_reported.png")
+        
+        return av_total, err
+
 
     def mol_ener_weight(self, ener, nblocks=1, plot=False ):
-        """Weight RDF by energy fluctuation. 
+        """Weight RDF by molecular energy fluctuation. 
 
         This implements the fluctuation theory approach to calculating a derivative and applies it to
         the RDF to obtain the negated derivative of the RDF. This does energy weighting by molecule, rather
-        than for the whole system. If you want to do the whole system, use ener_weight instead.
+        than for the whole system. If you want to do the whole system, use total_ener_weight instead.
 
         Args:
             ener (dict): Dictionary that stores energies for each molecule, for each configuration. 
@@ -148,7 +187,7 @@ class RDFS:
             all_mols.append(wrdfs)
         av_over_mol = np.average(all_mols,axis=0)
         av_total = np.average(av_over_mol,axis=0)
-        err = self._Error(av_over_mol,nblocks=5)
+        err = self._Error(av_over_mol,nblocks=nblocks)
 
         if plot == True:
             fig = plt.figure(dpi=300,figsize=(3,3))

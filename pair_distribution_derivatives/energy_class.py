@@ -8,6 +8,8 @@ class Energies:
 
     Attributes:
         mol_ener (dictionary): Dictionary of energy values
+        tot_ener (dictionary): Dictionary of system-wide energies 
+        nmols (int): Number of molecules
 
     """
     def __init__(self,nmols):
@@ -18,6 +20,7 @@ class Energies:
 
         """
         self.mol_ener = {}
+        self.tot_ener = {}
         self.nmols = nmols
 
     def add_mol_ener(self, compstr='ss', col=1, fname='pair.compute', program='LAMMPS'):
@@ -38,6 +41,49 @@ class Energies:
         self.mol_ener[compstr]={}
         for i in range(self.nmols):
             self.mol_ener[compstr][i+1]=np.genfromtxt("ener_dir/%s%d"%(fname,i),unpack=True,usecols=col,skip_header=2)
+    
+    def pull_lammps(self, fname='log.production'):
+        """Pulls energy data from LAMMPS
+
+        Pulls energy for all columns in the LAMMPS log file and writes them
+        as a file for each one. This intelligently parses the lammps logfile,
+        but must be a full logfile with only a single run command, otherwise breaks
+
+        Args:
+            n (int): Number of windows
+
+        """
+        data={}
+        with open(fname, 'r') as f:
+            lines=f.readlines()
+            flag=0
+            keys=[]
+            for line in lines:
+                if "Loop" in line:
+                    flag=0
+                    print("stop")
+                if flag == 1:
+                    for key in keys:
+                        data[key].append(float(line.strip().split()[loc[key]]))
+                if "Step Time" in line:
+                    flag=1
+                    data={}
+                    loc={}
+                    keys=line.strip().split()
+                    count = 0
+                    for key in keys:
+                        data[key]=[]
+                        loc[key]=count
+                        count+=1
+                    print("start")
+
+        for key in data:
+            data[key].pop()
+            np.savetxt("%s_init.out" % key, np.c_[data[key]])
+            self.tot_ener[key] = data[key]
+            if key == "Volume":
+                L = np.array(data[key])**(1./3.)
+                np.savetxt("L.dat", np.c_[L])
 
     def gen_default(self, fname='pair.compute',program='LAMMPS'):
         """Generates a default set of energies
