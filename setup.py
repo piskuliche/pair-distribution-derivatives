@@ -2,7 +2,7 @@
 
 from distutils.core import setup
 
-setup(name='pair-distribution-derivatives',
+setup(name='pair_distribution_derivatives',
       version='1.0',
       description='Pair Distribution Derivatives',
       author='Zeke Piskulich',
