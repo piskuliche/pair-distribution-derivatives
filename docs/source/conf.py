@@ -14,8 +14,11 @@ release = 'v1.1'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 import os, sys
-sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath('../'))
 extensions = ['sphinx.ext.napoleon','sphinx.ext.autodoc','sphinx.ext.todo','sphinx.ext.githubpages']
+
+autodoc_default_flags = ['members']
+autosummary_generate = True
 
 templates_path = ['_templates']
 exclude_patterns = []
