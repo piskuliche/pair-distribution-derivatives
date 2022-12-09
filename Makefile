@@ -8,7 +8,7 @@ pair_dist:
 	mkdir -p bin/
 	touch bin/test
 	rm bin/*
-	ln -s $(HOMEPATH)/pair-distribution-derivatives/setup_rdf.py $(HOMEPATH)/bin/
-	ln -s $(HOMEPATH)/pair-distribution-derivatives/rdf_main.py $(HOMEPATH)/bin/
-	ln -s $(HOMEPATH)/pair-distribution-derivatives/dump_split.py $(HOMEPATH)/bin/
+	ln -s $(HOMEPATH)/pair_distribution_derivatives/setup_rdf.py $(HOMEPATH)/bin/
+	ln -s $(HOMEPATH)/pair_distribution_derivatives/rdf_main.py $(HOMEPATH)/bin/
+	ln -s $(HOMEPATH)/pair_distribution_derivatives/dump_split.py $(HOMEPATH)/bin/
 	chmod 777 bin/*

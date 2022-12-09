@@ -3,3 +3,8 @@ pair_distribution_derivatives/__pycache__/
 pair_distribution_derivatives/__pycache__/dump_split.cpython-39.pyc
 build/
 settings.json
+*.egg
+dependency_links.txt
+PKG-INFO
+SOURCES.txt
+top_level.txt
