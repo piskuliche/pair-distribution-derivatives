@@ -17,7 +17,8 @@
     <script src="_static/sphinx_highlight.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="pair_distribution_derivatives" href="modules.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -28,7 +29,11 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="pair_distribution_derivatives"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">pair_distribution_derivatives v1.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">pair_distribution_derivatives</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pair_distribution_derivatives package</a></li> 
       </ul>
     </div>  
@@ -74,6 +79,28 @@ speed up the rerun command and lead to signficant savings (factor of orders of m
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pair_distribution_derivatives.energy_class.Energies.tot_ener">
+<span class="sig-name descname"><span class="pre">tot_ener</span></span><a class="headerlink" href="#pair_distribution_derivatives.energy_class.Energies.tot_ener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of system-wide energies</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pair_distribution_derivatives.energy_class.Energies.nmols">
+<span class="sig-name descname"><span class="pre">nmols</span></span><a class="headerlink" href="#pair_distribution_derivatives.energy_class.Energies.nmols" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of molecules</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -126,6 +153,20 @@ these groups, rather than something more complex. It reads all the files, and ge
 <li><p><strong>_figsize</strong> (<em>tuple</em>) – Figure size dimensions [default=(3,3)]</p></li>
 <li><p><strong>savefile</strong> (<em>bool</em>) – Save to a file rather than print to screen [default=False]</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pair_distribution_derivatives.energy_class.Energies.pull_lammps">
+<span class="sig-name descname"><span class="pre">pull_lammps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'log.production'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pair_distribution_derivatives.energy_class.Energies.pull_lammps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pulls energy data from LAMMPS</p>
+<p>Pulls energy for all columns in the LAMMPS log file and writes them
+as a file for each one. This intelligently parses the lammps logfile,
+but must be a full logfile with only a single run command, otherwise breaks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – Name of the logfile.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -289,10 +330,10 @@ if it does not already exist.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="pair_distribution_derivatives.rdf_class.RDFS.mol_ener_weight">
 <span class="sig-name descname"><span class="pre">mol_ener_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ener</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nblocks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pair_distribution_derivatives.rdf_class.RDFS.mol_ener_weight" title="Permalink to this definition">¶</a></dt>
-<dd><p>Weight RDF by energy fluctuation.</p>
+<dd><p>Weight RDF by molecular energy fluctuation.</p>
 <p>This implements the fluctuation theory approach to calculating a derivative and applies it to
 the RDF to obtain the negated derivative of the RDF. This does energy weighting by molecule, rather
-than for the whole system. If you want to do the whole system, use ener_weight instead.</p>
+than for the whole system. If you want to do the whole system, use total_ener_weight instead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -329,6 +370,34 @@ stored class. It also plots the RDF for your visual pleasure.</p>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>RDF value as a function of distance
 array_like: 95% CI for the RDF based on nblocks</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pair_distribution_derivatives.rdf_class.RDFS.total_ener_weight">
+<span class="sig-name descname"><span class="pre">total_ener_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">totener</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nblocks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pair_distribution_derivatives.rdf_class.RDFS.total_ener_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Weight RDF by total energy fluctuation.</p>
+<p>This implements the fluctuation theory approach to calculating a derivative and applies it to the
+RDF to obtain the negated derivative of the RDF. This does energy weighting by total energies, rather
+than for individual moelucles. If you want to do individual weighting, use mol_ener_weight instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>totener</strong> (<em>array_like</em>) – Array of systemwide energies, must match number of configs.</p></li>
+<li><p><strong>nblocks</strong> (<em>int</em>) – Number of blocks for block averaging [default=1]</p></li>
+<li><p><strong>plot</strong> (<em>bool</em>) – True, plots the derivative. False, does not plot. [default=False]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Array is the averaged, weighted RDF, which is equivalent to the negated</dt><dd><p>derivative of the RDF.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>array_like</p>
@@ -494,9 +563,12 @@ Options are TORQUE, or SLURM</p></li>
 <li><a class="reference internal" href="#module-pair_distribution_derivatives.energy_class">pair_distribution_derivatives.energy_class module</a><ul>
 <li><a class="reference internal" href="#pair_distribution_derivatives.energy_class.Energies"><code class="docutils literal notranslate"><span class="pre">Energies</span></code></a><ul>
 <li><a class="reference internal" href="#pair_distribution_derivatives.energy_class.Energies.mol_ener"><code class="docutils literal notranslate"><span class="pre">Energies.mol_ener</span></code></a></li>
+<li><a class="reference internal" href="#pair_distribution_derivatives.energy_class.Energies.tot_ener"><code class="docutils literal notranslate"><span class="pre">Energies.tot_ener</span></code></a></li>
+<li><a class="reference internal" href="#pair_distribution_derivatives.energy_class.Energies.nmols"><code class="docutils literal notranslate"><span class="pre">Energies.nmols</span></code></a></li>
 <li><a class="reference internal" href="#pair_distribution_derivatives.energy_class.Energies.add_mol_ener"><code class="docutils literal notranslate"><span class="pre">Energies.add_mol_ener()</span></code></a></li>
 <li><a class="reference internal" href="#pair_distribution_derivatives.energy_class.Energies.gen_default"><code class="docutils literal notranslate"><span class="pre">Energies.gen_default()</span></code></a></li>
 <li><a class="reference internal" href="#pair_distribution_derivatives.energy_class.Energies.plot_ener_dist"><code class="docutils literal notranslate"><span class="pre">Energies.plot_ener_dist()</span></code></a></li>
+<li><a class="reference internal" href="#pair_distribution_derivatives.energy_class.Energies.pull_lammps"><code class="docutils literal notranslate"><span class="pre">Energies.pull_lammps()</span></code></a></li>
 <li><a class="reference internal" href="#pair_distribution_derivatives.energy_class.Energies.stats"><code class="docutils literal notranslate"><span class="pre">Energies.stats()</span></code></a></li>
 <li><a class="reference internal" href="#pair_distribution_derivatives.energy_class.Energies.values"><code class="docutils literal notranslate"><span class="pre">Energies.values()</span></code></a></li>
 </ul>
@@ -515,6 +587,7 @@ Options are TORQUE, or SLURM</p></li>
 <li><a class="reference internal" href="#pair_distribution_derivatives.rdf_class.RDFS.lightweight_save"><code class="docutils literal notranslate"><span class="pre">RDFS.lightweight_save()</span></code></a></li>
 <li><a class="reference internal" href="#pair_distribution_derivatives.rdf_class.RDFS.mol_ener_weight"><code class="docutils literal notranslate"><span class="pre">RDFS.mol_ener_weight()</span></code></a></li>
 <li><a class="reference internal" href="#pair_distribution_derivatives.rdf_class.RDFS.report_rdfs"><code class="docutils literal notranslate"><span class="pre">RDFS.report_rdfs()</span></code></a></li>
+<li><a class="reference internal" href="#pair_distribution_derivatives.rdf_class.RDFS.total_ener_weight"><code class="docutils literal notranslate"><span class="pre">RDFS.total_ener_weight()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -538,6 +611,11 @@ Options are TORQUE, or SLURM</p></li>
 </li>
 </ul>
 
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="modules.html"
+                          title="previous chapter">pair_distribution_derivatives</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -569,7 +647,11 @@ Options are TORQUE, or SLURM</p></li>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="pair_distribution_derivatives"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">pair_distribution_derivatives v1.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >pair_distribution_derivatives</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pair_distribution_derivatives package</a></li> 
       </ul>
     </div>
