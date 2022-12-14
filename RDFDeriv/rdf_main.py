@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+import numpy as np
+import pickle
+import math
+import MDAnalysis as mda
+
+from rdf_class import RDFS
+from MDAnalysis.analysis.leaflet import LeafletFinder
 
 def LIPIDS_Main(datafile, trjfile, leafsel, dr=0.1, rmax=12.0, dim=2, fcount=5000, skip=1, segid = 0):
     """Sets up the calculation of the RDF for Lipid Membranes
@@ -64,6 +71,7 @@ def REG_Main(datafile, trjfile, molsel1, dr=0.1, rmax=12.0, dim=2, fcount=5000, 
 
     """
 
+
     u = mda.Universe(datafile, trjfile)
     sel1 = u.select_atoms("%s"%molsel1)
     all_rdfs = RDFS(dr = dr, rmax = rmax, dim = dim)
@@ -89,14 +97,9 @@ def REG_Main(datafile, trjfile, molsel1, dr=0.1, rmax=12.0, dim=2, fcount=5000, 
 
 if __name__ == "__main__":
 
-    import numpy as np
+ 
     import argparse
-    import pickle
-    import math
-    import MDAnalysis as mda
 
-    from rdf_class import RDFS
-    from MDAnalysis.analysis.leaflet import LeafletFinder
     parser = argparse.ArgumentParser(description='Calculate Radial Distribution Function')
 
     parser.add_argument('-fcount',  default=10000,          type=int,   help = 'Number of fps')
