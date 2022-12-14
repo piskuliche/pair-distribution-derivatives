@@ -1,75 +1,88 @@
 #!/usr/bin/env python
 
+def LIPIDS_Main(datafile, trjfile, leafsel, dr=0.1, rmax=12.0, dim=2, fcount=5000, skip=1, segid = 0):
+    """Sets up the calculation of the RDF for Lipid Membranes
 
+    This function calculates the RDF for lipid membranes, by using MDAnalysis leaflet analysis
+    and treating each of the leaflets separately, before combining them in the end. 
+    Essentially it exists to call the RDFS class.
 
+    Args:
+        datafile (str): Data file name
+        trjfile (str): Trajectory file name
+        leafsel (str): Leaflet selection text
+        dr (float): RDF bin width [default 0.1]
+        rmax (float): RDF cutoff [default 12.0]
+        dim (int): Dimensionality [default 2]
+        fcount (int): Number of configurations per segment [default 5000]
+        skip (int): Take every skipth frame [default 1]
+        segid (int): Segment number [default 0]
+    
+    Raises:
+        ValueError: Don't ask for it to use more than 50,000 configs.
 
+    """
+    u = mda.Universe(datafile, trjfile)
+    all_rdfs = RDFS(dr = dr, rmax = rmax, dim = dim)
 
-def Main(Iargs):
-    # Calls the correct rdf calculation based off of input arguments.
-    def LIPIDS_Main(Iargs):
-        """Sets up the calculation of the RDF for Lipid Membranes
+    start, stop = segid*fcount, (segid+1)*fcount
+    if ((stop-start)/skip) > 50000:
+        raise ValueError("Error: Too many configurations. Use the seg option to subdivide this calculation.")
 
-        This function calculates the RDF for lipid membranes, by using MDAnalysis leaflet analysis
-        and treating each of the leaflets separately, before combining them in the end. 
-        Essentially it exists to call the RDFS class.
+    count = 0
+    for ts in u.trajectory[start:stop:skip]:
+        leafs = LeafletFinder(u, leafsel, pbc=True)
+        leaf1, leaf2 = leafs.groups(0), leafs.groups(1)
+        L = ts.dimensions[:dim]
+        if count == 0: 
+            all_rdfs.calc_rdf(leaf1.positions, L, leaf1.resids, init=True)
+            all_rdfs.calc_rdf(leaf2.positions, L, leaf2.resids, init=True)
+        else:
+            all_rdfs.calc_rdf(leaf1.positions, L, leaf1.resids, init=False)
+            all_rdfs.calc_rdf(leaf2.positions, L, leaf2.resids, init=False)
+        count += 1
+    pickle.dump(all_rdfs,open("all_rdfs-%d.pckl"%segid,'wb'))
 
-        Args:
-            Iargs (ArgParse Object): These are the system input arguments used by argparse.
+def REG_Main(datafile, trjfile, molsel1, dr=0.1, rmax=12.0, dim=2, fcount=5000, skip=1, segid = 0):
+    """Sets up the calculation of the RDF
 
-        """
-        u = mda.Universe(Iargs.data, Iargs.trj)
-        all_rdfs = RDFS(dr = Iargs.dr, rmax = Iargs.rmax, dim = Iargs.dim)
+    This function calculates the RDF for regular liquid systems. Essentially it exists to call the RDFS class.
 
-        start, stop = Iargs.seg*Iargs.fcount, (Iargs.seg+1)*Iargs.fcount
-        if ((stop-start)/Iargs.skip) > 50000:
-            exit("Error: Too many configurations. Use the seg option to subdivide this calculation.")
+    Args:
+        datafile (str): Data file name
+        trjfile (str): Trajectory file name
+        leafsel (str): Leaflet selection text
+        dr (float): RDF bin width [default 0.1]
+        rmax (float): RDF cutoff [default 12.0]
+        dim (int): Dimensionality [default 2]
+        fcount (int): Number of configurations per segment [default 5000]
+        skip (int): Take every skipth frame [default 1]
+        segid (int): Segment number [default 0]
+    
+    Raises:
+        ValueError: Don't ask for it to use more than 50,000 configs.
 
-        count = 0
-        for ts in u.trajectory[start:stop:Iargs.skip]:
-            leafs = LeafletFinder(u, Iargs.leafsel, pbc=True)
-            leaf1, leaf2 = leafs.groups(0), leafs.groups(1)
-            L = ts.dimensions[:Iargs.dim]
-            if count == 0: 
-                all_rdfs.calc_rdf(leaf1.positions, L, leaf1.resids, init=True)
-                all_rdfs.calc_rdf(leaf2.positions, L, leaf2.resids, init=True)
-            else:
-                all_rdfs.calc_rdf(leaf1.positions, L, leaf1.resids, init=False)
-                all_rdfs.calc_rdf(leaf2.positions, L, leaf2.resids, init=False)
-            count += 1
-        pickle.dump(all_rdfs,open("all_rdfs-%d.pckl"%Iargs.seg,'wb'))
+    """
 
-    def REG_Main(Iargs):
-        """Sets up the calculation of the RDF
+    u = mda.Universe(datafile, trjfile)
+    sel1 = u.select_atoms("%s"%molsel1)
+    all_rdfs = RDFS(dr = dr, rmax = rmax, dim = dim)
 
-        This function calculates the RDF for regular liquid systems. Essentially it exists to call the RDFS class.
+    start, stop = segid*fcount, (segid+1)*fcount
+    if ((stop-start)/skip) > 50000:
+        raise ValueError("Error: Too many configurations. Use the seg option to subdivide this calculation.")
 
-        Args:
-            Iargs (ArgParse Object): These are the system input arguments used by argparse.
-            
-        """
-        u = mda.Universe(Iargs.data, Iargs.trj)
-        sel1 = u.select_atoms("%s"%Iargs.sel1)
-        all_rdfs = RDFS(dr = Iargs.dr, rmax = Iargs.rmax, dim = Iargs.dim)
+    count = 0
+    for ts in u.trajectory[start:stop:skip]:
+        L = ts.dimensions[:dim]
+        if count == 0: 
+            all_rdfs.calc_rdf(sel1.positions, L, sel1.resids, init=True)
+        else:
+            all_rdfs.calc_rdf(sel1.positions, L, sel1.resids, init=False)
+        count += 1
+    pickle.dump(all_rdfs,open("all_rdfs-%d.pckl"%segid,'wb'))
+    return
 
-        start, stop = Iargs.seg*Iargs.fcount, (Iargs.seg+1)*Iargs.fcount
-        if ((stop-start)/Iargs.skip) > 50000:
-            exit("Error: Too many configurations. Use the seg option to subdivide this calculation.")
-
-        count = 0
-        for ts in u.trajectory[start:stop:Iargs.skip]:
-            L = ts.dimensions[:Iargs.dim]
-            if count == 0: 
-                all_rdfs.calc_rdf(sel1.positions, L, sel1.resids, init=True)
-            else:
-                all_rdfs.calc_rdf(sel1.positions, L, sel1.resids, init=False)
-            count += 1
-        pickle.dump(all_rdfs,open("all_rdfs-%d.pckl"%Iargs.seg,'wb'))
-        return
-    print(Iargs.lipids)
-    if Iargs.lipids == True:
-        LIPIDS_Main(Iargs)
-    else:
-        REG_Main(Iargs)
 
 
 
@@ -104,5 +117,10 @@ if __name__ == "__main__":
 
     Iargs = parser.parse_args()
 
-    Main(Iargs)
+    if Iargs.lipids == True:
+        LIPIDS_Main(Iargs.datafile, Iargs.trjfile, Iargs.leafsel, dr=Iargs.dr, rmax=Iargs.rmax, dim=Iargs.dim, fcount=Iargs.fcount,
+                    skip=Iargs.skip, segid=Iargs.seg)
+    else:
+        REG_Main(Iargs.datafile, Iargs.trjfile, Iargs.sel1, dr=Iargs.dr, rmax=Iargs.rmax, dim=Iargs.dim, fcount=Iargs.fcount,
+                    skip=Iargs.skip, segid=Iargs.seg)
 
