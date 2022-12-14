@@ -1,6 +1,6 @@
 bin/
-pair_distribution_derivatives/__pycache__/
-pair_distribution_derivatives/__pycache__/dump_split.cpython-39.pyc
+*/__pycache__/
+*/__pycache__/*
 build/
 settings.json
 *.egg*
