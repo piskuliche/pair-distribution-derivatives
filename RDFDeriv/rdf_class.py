@@ -62,8 +62,6 @@ class RDFS:
         """
 
         natoms = np.shape(r)[0]
-
-        h_real = np.zeros(self.nbins)
         rlo    = np.arange(0,self.rmax,self.dr)
         rhi    = rlo + self.dr
 
@@ -91,7 +89,7 @@ class RDFS:
             self.rdfs[ids[i]].append(counts/h_id)
 
 
-    def report_rdfs(self,plot=False):
+    def report_rdfs(self, plot=False, average_over_configs=True):
         """Averages the RDF and plots it
 
         This function returns the radial distribution function averaged over all molecules and configurations in the 
@@ -99,10 +97,14 @@ class RDFS:
 
         Args:
             plot (bool): True, plots the RDF. False, does not plot. [default=False]
+            average_over_configs (bool): True, returns the config averaged rdf, False, returns pre-config averaging.
 
         Returns:
-            array_like: RDF value as a function of distance
-            array_like: 95% CI for the RDF based on nblocks
+            (tuple): RDF(s) and its Uncertainty
+            
+                * avrdf (array_like): average_over_configs=True: Averaged RDF as a function of distance. 
+                    average_over_configs = False, array of rdfs as a function of distance shape (nconfigs,r)
+                * err (array_like): 95% CI for the RDF based on nblocks
 
         """
         all_mols = []
@@ -118,32 +120,51 @@ class RDFS:
             plt.xlabel("r (Angstroms)")
             plt.ylabel("g(r)")
             plt.savefig("RDF_reported.png")
-        return av_total, err
+
+        if average_over_configs == True:
+            return av_total, err
+        else:
+            return av_over_mol, err
     
-    def total_ener_weight(self, totener, nblocks=1, plot=False):
+    def total_ener_weight(self, totener, nblocks=1, average_energy = 0.0, plot=False, average_over_configs=True):
         """Weight RDF by total energy fluctuation.
 
         This implements the fluctuation theory approach to calculating a derivative and applies it to the
         RDF to obtain the negated derivative of the RDF. This does energy weighting by total energies, rather
         than for individual moelucles. If you want to do individual weighting, use mol_ener_weight instead.
 
+        The feature, average_over_configs, sets whether the array_like return for the RDF derivative is
+        averaged over configurations. If True, it is averaged over configurations. If False, it is not. This 
+        can be useful for when you want to break the configuration up differently for block averaging over
+        multiple class objects.
+
+        Average energies can be overridden by the average_energy keyword. By default, the code calculates the average energy itself,
+        but if desired, this can be supplied by the user instead through this keyword.
+
         Args:
             totener (array_like): Array of systemwide energies, must match number of configs.
             nblocks (int): Number of blocks for block averaging [default=1]
             plot (bool): True, plots the derivative. False, does not plot. [default=False]
+            average_over_configs (bool): True, does config averaging. Flase, does not. [default=True]
+            average_energy (float): Value of the average energy, if non-zero, will use this instead of the average energy
+                calculated from totener. This is useful for cases like block averaging.
 
         Returns:
-            array_like: Array is the averaged, weighted RDF, which is equivalent to the negated
-                derivative of the RDF.
+            (tuple): Contains the RDF output and the error.
+                
+                * avrdf (array_like): average_over_configs=True: Averaged dRDF as a function of distance. 
+                    average_over_configs = False, array of drdfs as a function of distance shape (nconfigs,r)
+                * err (array_like): 95% CI for the RDF based on nblocks
 
         """
 
-        eav = np.average(totener)
+        if average_energy != 0.0: average_energy = np.average(totener)
+
         all_mols=[]
         for key in self.rdfs:
             all_mols.append(self.rdfs[key])
         av_over_mol = np.average(all_mols,axis=0)
-        de = totener - eav
+        de = totener - average_energy
         wrdf = np.multiply(de[:,None],av_over_mol)
         av_total = np.average(wrdf,axis=0)
 
@@ -156,35 +177,52 @@ class RDFS:
             plt.ylabel("g_H(r)")
             plt.savefig("Deriv_RDF_reported.png")
         
-        return av_total, err
+        if average_over_configs == True:
+            return av_total, err
+        else:
+            return av_over_mol, err
 
 
-    def mol_ener_weight(self, ener, nblocks=1, plot=False ):
+    def mol_ener_weight(self, ener, nblocks=1, average_energy=0.0, plot=False, average_over_configs=True):
         """Weight RDF by molecular energy fluctuation. 
 
         This implements the fluctuation theory approach to calculating a derivative and applies it to
         the RDF to obtain the negated derivative of the RDF. This does energy weighting by molecule, rather
         than for the whole system. If you want to do the whole system, use total_ener_weight instead.
 
+        The feature, average_over_configs, sets whether the array_like return for the RDF derivative is
+        averaged over configurations. If True, it is averaged over configurations. If False, it is not. This 
+        can be useful for when you want to break the configuration up differently for block averaging over
+        multiple class objects.
+
+        Average energies can be overridden by the average_energy keyword. By default, the code calculates the average energy itself,
+        but if desired, this can be supplied by the user instead through this keyword.
+
         Args:
             ener (dict): Dictionary that stores energies for each molecule, for each configuration. 
                 Dictionary keys must match self.rdfs, and must have same number of configurations.
             nblocks (int): Number of blocks for block averaging (default=1)
             plot (bool): True, plots the derivative. False, does not plot. [default=False]
+            average_over_configs (bool): True, does config averaging. Flase, does not. [default=True]
+            average_energy (float): Value of the average energy, if non-zero, will use this instead of the average energy
+                calculated from ener. This is useful for cases like block averaging.
         
         Returns:
-            array_like: Array is the averaged, weighted RDF, which is equivalent to the negated 
-                derivative of the RDF.
-            array_like: 95% CI of the derivative of the RDF.
+            (tuple): Contains the RDF derivative output and the error.
+                
+                * avrdf (array_like): average_over_configs=True: Averaged dRDF as a function of distance. 
+                    average_over_configs = False, array of drdfs as a function of distance shape (nconfigs,r)
+                * err (array_like): 95% CI for the RDF based on nblocks
                 
         """
+        if average_energy != 0.0: average_energy = np.average(list(ener.values()))
+
         all_mols = []
-        # This gives the average value of all the molecules - better average!
-        eav = np.average(list(ener.values()))
         for key in self.rdfs:
-            de = ener[key] - eav
+            de = ener[key] - average_energy
             wrdfs = np.multiply(de[:,None],self.rdfs[key])
             all_mols.append(wrdfs)
+
         av_over_mol = np.average(all_mols,axis=0)
         av_total = np.average(av_over_mol,axis=0)
         err = self._Error(av_over_mol,nblocks=nblocks)
@@ -195,7 +233,11 @@ class RDFS:
             plt.xlabel("r (Angstroms)")
             plt.ylabel("g_H(r)")
             plt.savefig("Deriv_RDF_reported.png")
-        return av_total, err
+
+        if average_over_configs == True:
+            return av_total, err
+        else:
+            return av_over_mol, err
     
     def lightweight_save(self,subdivide=5000,subdir="rdf_classes"):
         """Splits the RDF class into smaller classes
