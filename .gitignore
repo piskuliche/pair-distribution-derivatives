@@ -9,3 +9,4 @@ PKG-INFO
 dist/
 SOURCES.txt
 top_level.txt
+RDFDeriv/__pycache__/energy_class.cpython-39.pyc

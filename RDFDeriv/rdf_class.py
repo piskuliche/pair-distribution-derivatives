@@ -158,13 +158,13 @@ class RDFS:
 
         """
 
-        if average_energy != 0.0: average_energy = np.average(totener)
+        if average_energy == 0.0: average_energy = np.average(totener)
 
         all_mols=[]
         for key in self.rdfs:
             all_mols.append(self.rdfs[key])
         av_over_mol = np.average(all_mols,axis=0)
-        de = totener - average_energy
+        de = np.array(totener) - average_energy
         wrdf = np.multiply(de[:,None],av_over_mol)
         av_total = np.average(wrdf,axis=0)
 
@@ -180,7 +180,7 @@ class RDFS:
         if average_over_configs == True:
             return av_total, err
         else:
-            return av_over_mol, err
+            return wrdf, err
 
 
     def mol_ener_weight(self, ener, nblocks=1, average_energy=0.0, plot=False, average_over_configs=True):
@@ -215,7 +215,7 @@ class RDFS:
                 * err (array_like): 95% CI for the RDF based on nblocks
                 
         """
-        if average_energy != 0.0: average_energy = np.average(list(ener.values()))
+        if average_energy == 0.0: average_energy = np.average(list(ener.values()))
 
         all_mols = []
         for key in self.rdfs:
