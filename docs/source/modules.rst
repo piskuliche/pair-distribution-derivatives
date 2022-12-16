@@ -1,7 +1,7 @@
-pair_distribution_derivatives
-=============================
+RDFDeriv
+========
 
 .. toctree::
    :maxdepth: 4
 
-   pair_distribution_derivatives
+   RDFDeriv

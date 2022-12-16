@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+import glob, shutil
+import numpy as np
+import MDAnalysis as mda
 
 
 """
@@ -9,53 +12,53 @@ This is a code that sets up an energy calculation for different groups, split up
 
 """
 
+def LAMMPS_Main(datafile, trjfile, sysfile, nconfigs=5000, skip=1, framesep=1000,
+                 startframe=1000000, dim=3, cut=12.0, subdir="rdf_test"):
+    """Calls the code for writing LAMMPS Files
 
-def Main(Iargs):
-    #Chooses LAMMPS or Gromacs based on input arguments
-    def LAMMPS_Main(Iargs):
-        """Calls the code for writing LAMMPS Files
+    This function calls the code for writing LAMMPS files for calculating the energies.
 
-        This function calls the code for writing LAMMPS files for calculating the energies.
-
-        Args:
-            Iargs (ArgParse Object): These are the system input arguments used by argparse.
-
-        """
-        u = mda.Universe(Iargs.data,Iargs.dump)
-        atoms = u.select_atoms("all")
-        nmols=0
-        for ts in u.trajectory[0:Iargs.nconfigs:Iargs.skip]:
-            current_frame = ts.frame*Iargs.framesep + Iargs.startframe
-            L = ts.dimensions[:3]
-            comr = atoms.center_of_mass(compound='residues')
-            nmols = np.shape(comr)[0]
-            if ts.frame == 0:
-                Prep_Dir(nmols,Iargs)
-            dr = Get_Distances(comr,L,Iargs.dim)
-            Write_Groups(dr,current_frame,Iargs)
-        Write_System(nmols,Iargs)
-        Write_Task(Iargs, nmols = nmols, queue_engine="TORQUE", nmol_per_task=100, hours=2, procs=4)
-
-    def GMX_Main(Iargs):
-        """Calls the code for writing Gromacs Files
-
-        This function calls the code for writing GROMACS files for calculating the energies.
-
-        Args:
-            Iargs (ArgParse Object): These are the system input arguments used by argparse.
-        Todo:
-            * Implement these features for gromacs, may potentially require writing some new functions.
-        """
-        exit("Error: Gromacs support not yet added")
-
-    if Iargs.software == 'LAMMPS':
-        LAMMPS_Main(Iargs)
-    elif Iargs.software == 'GMX':
-        GMX_Main(Iargs)
-    else:
-        exit("Error: Sofware %s not recognized, options are LAMMPS or GMX" % Iargs.software)
-
+    Args:
+        datafile (str): Filename of lammps data file
+        trjfile (str): Filename of trajectory file
+        sysfile (str): Filename of system input file with run commands removed 
+        nconfigs (int): Number of configurations [default=5000]
+        skip (int): Number of configs to skip [default=1]
+        framesep (int): Number of timesteps between frames [default=1000]
+        startframe (int): Starting frame number [default-1000000]
+        dim (int): Number of dimensions [default=2]
+        cut (float): Spherical/cylindrical cutoff values [default=12.0]
+        subdir (str): Name of the subdirectory to generate the files. [default=rdf_test]
         
+
+    """
+    u = mda.Universe(datafile, trjfile)
+    atoms = u.select_atoms("all")
+    nmols=0
+    for ts in u.trajectory[0:nconfigs:skip]:
+        current_frame = ts.frame*framesep + startframe
+        print("Working on frame: %d" % current_frame)
+        L = ts.dimensions[:3]
+        comr = atoms.center_of_mass(compound='residues')
+        nmols = np.shape(comr)[0]
+        if ts.frame == 0:
+            Prep_Dir(nmols, subdir)
+        dr = Get_Distances(comr,L,dim)
+        Write_Groups(dr, current_frame, subdir, cut)
+    Write_System(nmols, sysfile=sysfile, subdir=subdir)
+    Write_Task(Iargs, nmols = nmols, queue_engine="TORQUE", nmol_per_task=100, hours=2, procs=4)
+
+def GMX_Main(datafile, trjfile, nconfigs=5000, skip=1, framesep=1000, startframe=1000000, dim=3):
+    """Calls the code for writing Gromacs Files
+
+    This function calls the code for writing GROMACS files for calculating the energies.
+
+    Args:
+        Iargs (ArgParse Object): These are the system input arguments used by argparse.
+    Todo:
+        * Implement these features for gromacs, may potentially require writing some new functions.
+    """
+    exit("Error: Gromacs support not yet added")
 
 def Get_Distances(r,L,dim=3):
     """Calculates the self distance array between a vector and its other elements.
@@ -98,7 +101,7 @@ def Sort_Distances(dr):
     sdr=np.take_along_axis(dr, idx, axis=-1)
     return idx,sdr
 
-def Prep_Dir(nmols,Iargs):
+def Prep_Dir(nmols, subdir):
     """Write files and directories to compute energies for LAMMPS
     
     This function prepares files to calculate the energies for each group (solute, close, and far) to 
@@ -110,37 +113,29 @@ def Prep_Dir(nmols,Iargs):
 
     Args:
         nmols (int): Number of molecules
-        Iargs (Argparse, object): Input arguments read in through argparse.
+        subdir (str): Name of subdirectory for calculation.
     
     """
     import os
-    if not os.path.exists("./%s"%Iargs.subdir):
-        os.makedirs("./%s"%Iargs.subdir)
-    if not os.path.exists("./%s/include_dir"%Iargs.subdir):
-        os.makedirs("./%s/include_dir"%Iargs.subdir)
-    if not os.path.exists("./%s/ener_dir"%Iargs.subdir):
-        os.makedirs("./%s/ener_dir"%Iargs.subdir)
-    if not os.path.exists("./%s/calc_dir"%Iargs.subdir):
-        os.makedirs("./%s/calc_dir"%Iargs.subdir)
-    if not os.path.exists("./%s/calc_dir/logs"%Iargs.subdir):
-        os.makedirs("./%s/calc_dir/logs"%Iargs.subdir)
+    if not os.path.exists("./%s" % subdir):
+        os.makedirs("./%s" % subdir)
+    if not os.path.exists("./%s/include_dir" % subdir):
+        os.makedirs("./%s/include_dir" % subdir)
+    if not os.path.exists("./%s/ener_dir" % subdir):
+        os.makedirs("./%s/ener_dir" % subdir)
+    if not os.path.exists("./%s/calc_dir" % subdir):
+        os.makedirs("./%s/calc_dir" % subdir)
+    if not os.path.exists("./%s/calc_dir/logs" % subdir):
+        os.makedirs("./%s/calc_dir/logs" % subdir)
     for basefile in glob.glob("./base/*"):
-        shutil.copy(basefile,"./%s/"%Iargs.subdir)
+        shutil.copy(basefile,"./%s/" % subdir)
 
-    fi = open("./%s/include_dir/include.computes"%Iargs.subdir,'w')
+    fi = open("./%s/include_dir/include.computes" % subdir,'w')
     # Define the initial groups to be 0
     for grp in ["lt","solu","close","far"]:
         fi.write("group %s molecule 0\n"%grp)
 
     # Pairwise Components
-    """
-    fi.write("compute sspair solu pe/tally solu\n")
-    fi.write("compute ccpair close pe/tally close\n")
-    fi.write("compute ffpair far pe/tally far\n")
-    fi.write("compute scpair solu pe/tally close\n")
-    fi.write("compute sfpair solu pe/tally far\n")
-    fi.write("compute cfpair close pe/tally far\n")
-    """
     fi.write("compute sspair solu group/group solu kspace yes pair yes\n")
     fi.write("compute ccpair close group/group close kspace yes pair yes\n")
     fi.write("compute ffpair far group/group far kspace yes pair yes\n")
@@ -160,15 +155,13 @@ def Prep_Dir(nmols,Iargs):
     fi.close()
         
     for i in range(nmols):
-        incf = open("./%s/include_dir/include.groups-%d"%(Iargs.subdir,i),'w')
+        incf = open("./%s/include_dir/include.groups-%d"%(subdir,i),'w')
         # Final Files
         incf.write("fix wpair all ave/time 1000 1 1000 c_sspair c_ccpair c_ffpair c_scpair c_sfpair c_cfpair file ../ener_dir/pair.compute%d\n"%i)
         incf.write("fix wintr all ave/time 1000 1 1000 c_sintra c_cintra c_fintra file ../ener_dir/intra.compute%d\n"%i)
         incf.close()
 
-
-
-def Write_Groups(dr,frame,Iargs):
+def Write_Groups(dr, frame, subdir, cut=12):
     """Writes occupancies in each group to a lammps file
     
     This writes the group occupancies out to a different file for each molcule. This is based on a distance cutoff,
@@ -177,14 +170,16 @@ def Write_Groups(dr,frame,Iargs):
     Args:
         dr (array_like): Array of pairwise distances
         frame (int): Timestep associated with the current frame
-        Iargs (Argparse, object): Input arguments read in through argparse.
+        subdir (str): Subdirectory where rdf calculation will take place
+        cut (float): Spherical (or cylindrical) cutoff distance for defining close group
+
     """
 
     nmols=np.shape(dr)[0]
     mols = np.arange(0,nmols)
     for i in range(nmols):
-        fi = open("./%s/include_dir/include.groups-%d"%(Iargs.subdir,i),'a')
-        close=np.where(dr[i]<Iargs.cut)[-1]
+        fi = open("./%s/include_dir/include.groups-%d"%(subdir, i),'a')
+        close=np.where(dr[i]<cut)[-1]
         for grp in ["lt","solu","close","far"]:
             fi.write("group %s clear\n"%grp)
         fi.write("\n")
@@ -193,14 +188,7 @@ def Write_Groups(dr,frame,Iargs):
             if j != i: fi.write("%d "% (j+1)) # Ignore i from close
         fi.write("\n")
         fi.write("group solu molecule %d\n"%(i+1))
-        #fi.write("group close subtract lt solu\n")
-        #fi.write("group far subtract all lt solu\n")
-        
-        fi.write("group far molecule ")
-        for j in mols:
-            if j not in close:
-                fi.write("%d " % (j+1))
-        fi.write("\n")
+        fi.write("group far subtract all close solu\n")
 
         fi.write("\n")
         fi.write('print "beginning rerun %d"\n'%frame)
@@ -208,8 +196,7 @@ def Write_Groups(dr,frame,Iargs):
         fi.write('print "finishing rerun"\n')
         fi.close()
 
-
-def Write_System(nmols,Iargs):
+def Write_System(nmols, sysfile="system.in", subdir="rdf_test"):
     """This writes the includes into the simulation input file.
 
     This takes a base system input file (Iargs.sys) and writes them into a separate system input file
@@ -217,31 +204,35 @@ def Write_System(nmols,Iargs):
 
     Args:
         nmols (int): Number of molecules
-        Iargs (Argparse, object): Input arguments read in through argparse.
+        sysfile (str): System input file with no run commands inside of it.
+        subdir (str): Subdirectory where rdf calculation will take place
 
     """
     print("Writing System Files")
     lines=None
-    with open("./%s/%s" %(Iargs.subdir,Iargs.sys),'r') as f:
+    with open("./%s/%s" %(subdir, sysfile),'r') as f:
         lines = f.readlines()
     for i in range(nmols):
-        with open("./%s/calc_dir/%s-%d"%(Iargs.subdir,Iargs.sys,i),'w') as g:
+        with open("./%s/calc_dir/%s-%d"%(subdir,sysfile,i),'w') as g:
             for line in lines:
                 g.write(line)
             g.write("log logs/log.%d.out\n"%i)
             g.write("include ../include_dir/include.computes\n")
             g.write("include ../include_dir/include.groups-%d\n"%i)
     
-def Write_Task(Iargs, nmols = 343, queue_engine="TORQUE", nmol_per_task=1, hours=2, procs=4):
+def Write_Task(nmols = 343, queue_engine="TORQUE", nmol_per_task=1, hours=2, procs=4, subdir="rdf_test"):
     """This is a simple function to write a submit script
 
     Writes a file, called submit_task.sh
 
     Args:
-        Iargs (argparse): Input arguments object from argparse
+        nmols (int): Number of molecules
         queue_engine (str): What queue engine should it write for?
             Options are TORQUE, or SLURM
         nmol_per_task (int): Number of molecules per task
+        hours (int): Number of calculation hours
+        procs (int): Number of processors (must be appropriate for system)
+        subdir (str): Subdirectory where rdf calculation will take place
 
     Todo:
         * SLURM Support
@@ -261,7 +252,7 @@ def Write_Task(Iargs, nmols = 343, queue_engine="TORQUE", nmol_per_task=1, hours
     stop_array = np.ceil(nmols/nmol_per_task)
     
     if queue_engine == "TORQUE":
-        with open("./%s/submit_task.sh" % Iargs.subdir,'w') as f:
+        with open("./%s/submit_task.sh" % subdir,'w') as f:
             f.write("#!/bin/bash\n")
             f.write("#\n")
             f.write("#$ -l h_rt=%d:00:00\n"%hours)
@@ -328,9 +319,6 @@ def Write_Task(Iargs, nmols = 343, queue_engine="TORQUE", nmol_per_task=1, hours
 
 if __name__ == "__main__":
     import argparse
-    import glob, shutil
-    import numpy as np
-    import MDAnalysis as mda
     parser = argparse.ArgumentParser(description='This code creates a series of files for lammps simulations that quickly rerun and re-calculate energies')
     parser.add_argument('-data',    default="equil.data",       type=str,help='Name of data file [default equil.data]')
     parser.add_argument('-dump',    default="dump.lammpsdump",  type=str,help='Name of dump file [default dump.lammpsdump]')
@@ -345,4 +333,11 @@ if __name__ == "__main__":
     parser.add_argument('-subdir',  default='rdf_deriv',        type=str, help='Subdirectory for calculation')
     Iargs = parser.parse_args()
 
-    Main(Iargs)
+    if Iargs.software == 'LAMMPS':
+        LAMMPS_Main(Iargs.data, Iargs.dump, Iargs.sys, nconfigs=Iargs.nconfigs, skip=Iargs.skip, framesep=Iargs.framesep,
+                 startframe=Iargs.startframe, dim=Iargs.dim, cut=Iargs.cut, subdir=Iargs.subdir)
+    elif Iargs.software == 'GMX':
+        GMX_Main(Iargs.data, Iargs.dump, Iargs.sys, nconfigs=Iargs.nconfigs, skip=Iargs.skip, framesep=Iargs.framesep,
+                 startframe=Iargs.startframe, dim=Iargs.dim, cut=Iargs.cut, subdir=Iargs.subdir)
+    else:
+        exit("Error: Sofware %s not recognized, options are LAMMPS or GMX" % Iargs.software)

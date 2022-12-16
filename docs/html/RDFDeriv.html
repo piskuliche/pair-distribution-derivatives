@@ -1,0 +1,789 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RDFDeriv package &#8212; RDF Derivatives v1.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="RDFDeriv" href="modules.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="RDFDeriv"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">RDF Derivatives v1.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">RDFDeriv</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">RDFDeriv package</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="rdfderiv-package">
+<h1>RDFDeriv package<a class="headerlink" href="#rdfderiv-package" title="Permalink to this heading">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+</div>
+<div class="section" id="module-RDFDeriv.dump_split">
+<span id="rdfderiv-dump-split-module"></span><h2>RDFDeriv.dump_split module<a class="headerlink" href="#module-RDFDeriv.dump_split" title="Permalink to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="RDFDeriv.dump_split.Split_Main">
+<span class="sig-prename descclassname"><span class="pre">RDFDeriv.dump_split.</span></span><span class="sig-name descname"><span class="pre">Split_Main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Iargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.dump_split.Split_Main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits a LAMMPS dumpfile by frame</p>
+<p>This takes a LAMMPS custom dump file and splits it into separate frames. This can significantly
+speed up the rerun command and lead to signficant savings (factor of orders of magnitude in wall-clock time).</p>
+<p>Writes files to dump_dir in the current directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Iargs</strong> (<em>Argparse object</em>) – Input arguments read through argparse.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-RDFDeriv.energy_class">
+<span id="rdfderiv-energy-class-module"></span><h2>RDFDeriv.energy_class module<a class="headerlink" href="#module-RDFDeriv.energy_class" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="RDFDeriv.energy_class.Energies">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">RDFDeriv.energy_class.</span></span><span class="sig-name descname"><span class="pre">Energies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nmols</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.energy_class.Energies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to store energies for energy weighting</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RDFDeriv.energy_class.Energies.mol_ener">
+<span class="sig-name descname"><span class="pre">mol_ener</span></span><a class="headerlink" href="#RDFDeriv.energy_class.Energies.mol_ener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of energy values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RDFDeriv.energy_class.Energies.tot_ener">
+<span class="sig-name descname"><span class="pre">tot_ener</span></span><a class="headerlink" href="#RDFDeriv.energy_class.Energies.tot_ener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of system-wide energies</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RDFDeriv.energy_class.Energies.nmols">
+<span class="sig-name descname"><span class="pre">nmols</span></span><a class="headerlink" href="#RDFDeriv.energy_class.Energies.nmols" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of molecules</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RDFDeriv.energy_class.Energies.add_mol_ener">
+<span class="sig-name descname"><span class="pre">add_mol_ener</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ss'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pair.compute'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LAMMPS'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.energy_class.Energies.add_mol_ener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add energies from a file to the self.mol_ener dictionary</p>
+<p>This function reads in energies from the file and gets it into the molecular energy container such that it
+could be used for later weighting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compstr</strong> (<em>str</em>) – String name for the energy component</p></li>
+<li><p><strong>col</strong> (<em>int</em>) – Integer number for column from which energy is read.</p></li>
+<li><p><strong>fname</strong> (<em>str</em>) – Base name of energy file.</p></li>
+<li><p><strong>program</strong> (<em>str</em>) – Which MD program generated the files.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RDFDeriv.energy_class.Energies.gen_default">
+<span class="sig-name descname"><span class="pre">gen_default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pair.compute'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LAMMPS'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.energy_class.Energies.gen_default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a default set of energies</p>
+<p>This function assumes that you want to split your energies by solute, close and far, and the intermingling of
+these groups, rather than something more complex. It reads all the files, and generates the dictionary with them in it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) – Base name of energy file.</p></li>
+<li><p><strong>program</strong> (<em>str</em>) – Which MD program generated the files.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RDFDeriv.energy_class.Energies.plot_ener_dist">
+<span class="sig-name descname"><span class="pre">plot_ener_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ss'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_nbins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(3,</span> <span class="pre">3)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.energy_class.Energies.plot_ener_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the energy distributions</p>
+<p>This function plots the energy distributions using matplotlib.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compstr</strong> (<em>str</em>) – String name for the energy component [default=’ss’]</p></li>
+<li><p><strong>_nbins</strong> (<em>int</em>) – Number of histogram bins [default=100]</p></li>
+<li><p><strong>_dpi</strong> (<em>int</em>) – DPI for plot [default=300]</p></li>
+<li><p><strong>_figsize</strong> (<em>tuple</em>) – Figure size dimensions [default=(3,3)]</p></li>
+<li><p><strong>savefile</strong> (<em>bool</em>) – Save to a file rather than print to screen [default=False]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RDFDeriv.energy_class.Energies.pull_lammps">
+<span class="sig-name descname"><span class="pre">pull_lammps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'log.production'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.energy_class.Energies.pull_lammps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pulls energy data from LAMMPS</p>
+<p>Pulls energy for all columns in the LAMMPS log file and writes them
+as a file for each one. This intelligently parses the lammps logfile,
+but must be a full logfile with only a single run command, otherwise breaks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – Name of the logfile.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RDFDeriv.energy_class.Energies.stats">
+<span class="sig-name descname"><span class="pre">stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ss'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_skip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.energy_class.Energies.stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates and reports averages and statistics</p>
+<p>This operates statistics on a particular energy type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compstr</strong> (<em>str</em>) – String name for the energy component [default ‘ss’]</p></li>
+<li><p><strong>_start</strong> (<em>int</em>) – index to start splice [default=0]</p></li>
+<li><p><strong>_stop</strong> (<em>int</em>) – index to stop splice [default=-1]</p></li>
+<li><p><strong>_skip</strong> (<em>int</em>) – Skip between indices [default=1]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RDFDeriv.energy_class.Energies.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ss'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_skip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.energy_class.Energies.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Outputs the energy values, and splices them any which way</p>
+<p>This is just a simple way of pulling different energies (and subdividing them) into more
+manageable chunks. This is useful when the RDF class has been subdivided into smaller
+class objects, while retaining a majority of the energies in one location.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compstr</strong> (<em>str</em>) – String name for the energy component [default ‘ss’]</p></li>
+<li><p><strong>_start</strong> (<em>int</em>) – index to start splice [default=0]</p></li>
+<li><p><strong>_stop</strong> (<em>int</em>) – index to stop splice [default=-1]</p></li>
+<li><p><strong>_skip</strong> (<em>int</em>) – Skip between indices [default=1]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Energy values in a dictionary of arrays.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-RDFDeriv.rdf_class">
+<span id="rdfderiv-rdf-class-module"></span><h2>RDFDeriv.rdf_class module<a class="headerlink" href="#module-RDFDeriv.rdf_class" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="RDFDeriv.rdf_class.RDFS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">RDFDeriv.rdf_class.</span></span><span class="sig-name descname"><span class="pre">RDFS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.rdf_class.RDFS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Calculates and stores the RDF</p>
+<p>This class calculates and stores the RDF, and can calculate the derivative of the RDF
+if it is provided with energies, calculated elsewhere.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RDFDeriv.rdf_class.RDFS.dr">
+<span class="sig-name descname"><span class="pre">dr</span></span><a class="headerlink" href="#RDFDeriv.rdf_class.RDFS.dr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bin width in A for RDF</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RDFDeriv.rdf_class.RDFS.rmax">
+<span class="sig-name descname"><span class="pre">rmax</span></span><a class="headerlink" href="#RDFDeriv.rdf_class.RDFS.rmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cutoff distance in A for the RDF</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RDFDeriv.rdf_class.RDFS.nbins">
+<span class="sig-name descname"><span class="pre">nbins</span></span><a class="headerlink" href="#RDFDeriv.rdf_class.RDFS.nbins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of RDF bins</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RDFDeriv.rdf_class.RDFS.dim">
+<span class="sig-name descname"><span class="pre">dim</span></span><a class="headerlink" href="#RDFDeriv.rdf_class.RDFS.dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of dimensions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RDFDeriv.rdf_class.RDFS.rdfs">
+<span class="sig-name descname"><span class="pre">rdfs</span></span><a class="headerlink" href="#RDFDeriv.rdf_class.RDFS.rdfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of lists, each dict element is a different molecule</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RDFDeriv.rdf_class.RDFS.xrdf">
+<span class="sig-name descname"><span class="pre">xrdf</span></span><a class="headerlink" href="#RDFDeriv.rdf_class.RDFS.xrdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Numpy array of x values, used for plotting</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RDFDeriv.rdf_class.RDFS.calc_rdf">
+<span class="sig-name descname"><span class="pre">calc_rdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.rdf_class.RDFS.calc_rdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to calculate the RDF</p>
+<p>This is a class for calculating the rdf, given a set of positions. Note that self.dim chooses between a 2D or 3D RDF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – Coordinates of the atoms for which the RDF is being calculated.</p></li>
+<li><p><strong>L</strong> (<em>array_like</em>) – Box dimension array</p></li>
+<li><p><strong>ids</strong> (<em>array_like</em>) – Array of molecule ids to act as dictionary keys for self.rdfs</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RDFDeriv.rdf_class.RDFS.lightweight_save">
+<span class="sig-name descname"><span class="pre">lightweight_save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subdivide</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rdf_classes'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.rdf_class.RDFS.lightweight_save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits the RDF class into smaller classes</p>
+<p>This class function takes the current class, and rebuilds it as a series of smaller classes. This is done
+by taking the total number of rdfs and dividing it into chunks of [subdivide] rdfs long.</p>
+<p>For instance, if you have 50k rdfs, and subdivide is 5000, you get 10 class instances saved.</p>
+<p>This lets you work with class objects, not in memory, which can be ideal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subdivide</strong> (<em>int</em>) – Number of configurations per class instance [default=5000]
+Total number of configurations should be evenly divided by this number.</p></li>
+<li><p><strong>subdir</strong> (<em>str</em>) – Name of a directory to store the classes. This directory will be created
+if it does not already exist.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RDFDeriv.rdf_class.RDFS.mol_ener_weight">
+<span class="sig-name descname"><span class="pre">mol_ener_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ener</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nblocks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average_energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average_over_configs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.rdf_class.RDFS.mol_ener_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Weight RDF by molecular energy fluctuation.</p>
+<p>This implements the fluctuation theory approach to calculating a derivative and applies it to
+the RDF to obtain the negated derivative of the RDF. This does energy weighting by molecule, rather
+than for the whole system. If you want to do the whole system, use total_ener_weight instead.</p>
+<p>The feature, average_over_configs, sets whether the array_like return for the RDF derivative is
+averaged over configurations. If True, it is averaged over configurations. If False, it is not. This
+can be useful for when you want to break the configuration up differently for block averaging over
+multiple class objects.</p>
+<p>Average energies can be overridden by the average_energy keyword. By default, the code calculates the average energy itself,
+but if desired, this can be supplied by the user instead through this keyword.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ener</strong> (<em>dict</em>) – Dictionary that stores energies for each molecule, for each configuration.
+Dictionary keys must match self.rdfs, and must have same number of configurations.</p></li>
+<li><p><strong>nblocks</strong> (<em>int</em>) – Number of blocks for block averaging (default=1)</p></li>
+<li><p><strong>plot</strong> (<em>bool</em>) – True, plots the derivative. False, does not plot. [default=False]</p></li>
+<li><p><strong>average_over_configs</strong> (<em>bool</em>) – True, does config averaging. Flase, does not. [default=True]</p></li>
+<li><p><strong>average_energy</strong> (<em>float</em>) – Value of the average energy, if non-zero, will use this instead of the average energy
+calculated from ener. This is useful for cases like block averaging.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Contains the RDF derivative output and the error.</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>avrdf (array_like): average_over_configs=True: Averaged dRDF as a function of distance.</dt><dd><p>average_over_configs = False, array of drdfs as a function of distance shape (nconfigs,r)</p>
+</dd>
+</dl>
+</li>
+<li><p>err (array_like): 95% CI for the RDF based on nblocks</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RDFDeriv.rdf_class.RDFS.report_rdfs">
+<span class="sig-name descname"><span class="pre">report_rdfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average_over_configs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.rdf_class.RDFS.report_rdfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Averages the RDF and plots it</p>
+<p>This function returns the radial distribution function averaged over all molecules and configurations in the
+stored class. It also plots the RDF for your visual pleasure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plot</strong> (<em>bool</em>) – True, plots the RDF. False, does not plot. [default=False]</p></li>
+<li><p><strong>average_over_configs</strong> (<em>bool</em>) – True, returns the config averaged rdf, False, returns pre-config averaging.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>RDF(s) and its Uncertainty</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>avrdf (array_like): average_over_configs=True: Averaged RDF as a function of distance.</dt><dd><p>average_over_configs = False, array of rdfs as a function of distance shape (nconfigs,r)</p>
+</dd>
+</dl>
+</li>
+<li><p>err (array_like): 95% CI for the RDF based on nblocks</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RDFDeriv.rdf_class.RDFS.total_ener_weight">
+<span class="sig-name descname"><span class="pre">total_ener_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">totener</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nblocks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average_energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average_over_configs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.rdf_class.RDFS.total_ener_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Weight RDF by total energy fluctuation.</p>
+<p>This implements the fluctuation theory approach to calculating a derivative and applies it to the
+RDF to obtain the negated derivative of the RDF. This does energy weighting by total energies, rather
+than for individual moelucles. If you want to do individual weighting, use mol_ener_weight instead.</p>
+<p>The feature, average_over_configs, sets whether the array_like return for the RDF derivative is
+averaged over configurations. If True, it is averaged over configurations. If False, it is not. This
+can be useful for when you want to break the configuration up differently for block averaging over
+multiple class objects.</p>
+<p>Average energies can be overridden by the average_energy keyword. By default, the code calculates the average energy itself,
+but if desired, this can be supplied by the user instead through this keyword.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>totener</strong> (<em>array_like</em>) – Array of systemwide energies, must match number of configs.</p></li>
+<li><p><strong>nblocks</strong> (<em>int</em>) – Number of blocks for block averaging [default=1]</p></li>
+<li><p><strong>plot</strong> (<em>bool</em>) – True, plots the derivative. False, does not plot. [default=False]</p></li>
+<li><p><strong>average_over_configs</strong> (<em>bool</em>) – True, does config averaging. Flase, does not. [default=True]</p></li>
+<li><p><strong>average_energy</strong> (<em>float</em>) – Value of the average energy, if non-zero, will use this instead of the average energy
+calculated from totener. This is useful for cases like block averaging.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Contains the RDF output and the error.</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>avrdf (array_like): average_over_configs=True: Averaged dRDF as a function of distance.</dt><dd><p>average_over_configs = False, array of drdfs as a function of distance shape (nconfigs,r)</p>
+</dd>
+</dl>
+</li>
+<li><p>err (array_like): 95% CI for the RDF based on nblocks</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-RDFDeriv.rdf_main">
+<span id="rdfderiv-rdf-main-module"></span><h2>RDFDeriv.rdf_main module<a class="headerlink" href="#module-RDFDeriv.rdf_main" title="Permalink to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="RDFDeriv.rdf_main.LIPIDS_Main">
+<span class="sig-prename descclassname"><span class="pre">RDFDeriv.rdf_main.</span></span><span class="sig-name descname"><span class="pre">LIPIDS_Main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datafile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trjfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leafsel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fcount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.rdf_main.LIPIDS_Main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up the calculation of the RDF for Lipid Membranes</p>
+<p>This function calculates the RDF for lipid membranes, by using MDAnalysis leaflet analysis
+and treating each of the leaflets separately, before combining them in the end.
+Essentially it exists to call the RDFS class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datafile</strong> (<em>str</em>) – Data file name</p></li>
+<li><p><strong>trjfile</strong> (<em>str</em>) – Trajectory file name</p></li>
+<li><p><strong>leafsel</strong> (<em>str</em>) – Leaflet selection text</p></li>
+<li><p><strong>dr</strong> (<em>float</em>) – RDF bin width [default 0.1]</p></li>
+<li><p><strong>rmax</strong> (<em>float</em>) – RDF cutoff [default 12.0]</p></li>
+<li><p><strong>dim</strong> (<em>int</em>) – Dimensionality [default 2]</p></li>
+<li><p><strong>fcount</strong> (<em>int</em>) – Number of configurations per segment [default 5000]</p></li>
+<li><p><strong>skip</strong> (<em>int</em>) – Take every skipth frame [default 1]</p></li>
+<li><p><strong>segid</strong> (<em>int</em>) – Segment number [default 0]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Don’t ask for it to use more than 50,000 configs.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RDFDeriv.rdf_main.REG_Main">
+<span class="sig-prename descclassname"><span class="pre">RDFDeriv.rdf_main.</span></span><span class="sig-name descname"><span class="pre">REG_Main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datafile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trjfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">molsel1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fcount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.rdf_main.REG_Main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up the calculation of the RDF</p>
+<p>This function calculates the RDF for regular liquid systems. Essentially it exists to call the RDFS class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datafile</strong> (<em>str</em>) – Data file name</p></li>
+<li><p><strong>trjfile</strong> (<em>str</em>) – Trajectory file name</p></li>
+<li><p><strong>leafsel</strong> (<em>str</em>) – Leaflet selection text</p></li>
+<li><p><strong>dr</strong> (<em>float</em>) – RDF bin width [default 0.1]</p></li>
+<li><p><strong>rmax</strong> (<em>float</em>) – RDF cutoff [default 12.0]</p></li>
+<li><p><strong>dim</strong> (<em>int</em>) – Dimensionality [default 2]</p></li>
+<li><p><strong>fcount</strong> (<em>int</em>) – Number of configurations per segment [default 5000]</p></li>
+<li><p><strong>skip</strong> (<em>int</em>) – Take every skipth frame [default 1]</p></li>
+<li><p><strong>segid</strong> (<em>int</em>) – Segment number [default 0]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Don’t ask for it to use more than 50,000 configs.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-RDFDeriv.setup_rdf">
+<span id="rdfderiv-setup-rdf-module"></span><h2>RDFDeriv.setup_rdf module<a class="headerlink" href="#module-RDFDeriv.setup_rdf" title="Permalink to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="RDFDeriv.setup_rdf.GMX_Main">
+<span class="sig-prename descclassname"><span class="pre">RDFDeriv.setup_rdf.</span></span><span class="sig-name descname"><span class="pre">GMX_Main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datafile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trjfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nconfigs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">framesep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startframe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.setup_rdf.GMX_Main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls the code for writing Gromacs Files</p>
+<p>This function calls the code for writing GROMACS files for calculating the energies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Iargs</strong> (<em>ArgParse Object</em>) – These are the system input arguments used by argparse.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RDFDeriv.setup_rdf.Get_Distances">
+<span class="sig-prename descclassname"><span class="pre">RDFDeriv.setup_rdf.</span></span><span class="sig-name descname"><span class="pre">Get_Distances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.setup_rdf.Get_Distances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the self distance array between a vector and its other elements.</p>
+<p>This uses numpy broadcasting to calculate ALL the pairwise distances and outputs them in a matrix of distances.</p>
+<p>This is described here:
+<a class="reference external" href="https://stackoverflow.com/questions/60039982/numpy-python-vectorize-distance-function-to-calculate-pairwise-distance-of-2-ma/60040269#60040269">https://stackoverflow.com/questions/60039982/numpy-python-vectorize-distance-function-to-calculate-pairwise-distance-of-2-ma/60040269#60040269</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – Array of positions shape(natoms,dim)</p></li>
+<li><p><strong>L</strong> (<em>array_like</em>) – Box dimension array shape(dim,)</p></li>
+<li><p><strong>dim</strong> (<em>int</em>) – Box dimensionality [default=3]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>returns pairwise distances</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RDFDeriv.setup_rdf.LAMMPS_Main">
+<span class="sig-prename descclassname"><span class="pre">RDFDeriv.setup_rdf.</span></span><span class="sig-name descname"><span class="pre">LAMMPS_Main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datafile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trjfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sysfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nconfigs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">framesep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startframe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rdf_test'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.setup_rdf.LAMMPS_Main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls the code for writing LAMMPS Files</p>
+<p>This function calls the code for writing LAMMPS files for calculating the energies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datafile</strong> (<em>str</em>) – Filename of lammps data file</p></li>
+<li><p><strong>trjfile</strong> (<em>str</em>) – Filename of trajectory file</p></li>
+<li><p><strong>sysfile</strong> (<em>str</em>) – Filename of system input file with run commands removed</p></li>
+<li><p><strong>nconfigs</strong> (<em>int</em>) – Number of configurations [default=5000]</p></li>
+<li><p><strong>skip</strong> (<em>int</em>) – Number of configs to skip [default=1]</p></li>
+<li><p><strong>framesep</strong> (<em>int</em>) – Number of timesteps between frames [default=1000]</p></li>
+<li><p><strong>startframe</strong> (<em>int</em>) – Starting frame number [default-1000000]</p></li>
+<li><p><strong>dim</strong> (<em>int</em>) – Number of dimensions [default=2]</p></li>
+<li><p><strong>cut</strong> (<em>float</em>) – Spherical/cylindrical cutoff values [default=12.0]</p></li>
+<li><p><strong>subdir</strong> (<em>str</em>) – Name of the subdirectory to generate the files. [default=rdf_test]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RDFDeriv.setup_rdf.Prep_Dir">
+<span class="sig-prename descclassname"><span class="pre">RDFDeriv.setup_rdf.</span></span><span class="sig-name descname"><span class="pre">Prep_Dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nmols</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.setup_rdf.Prep_Dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write files and directories to compute energies for LAMMPS</p>
+<p>This function prepares files to calculate the energies for each group (solute, close, and far) to
+get the energies. This makes any directories that do not already exist.</p>
+<p>This writes files in includ_dir, and calc_dir, which are subdirs of Iargs.subdir.</p>
+<p>For lammps, we use pe/tally because it is faster than compute group/group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nmols</strong> (<em>int</em>) – Number of molecules</p></li>
+<li><p><strong>subdir</strong> (<em>str</em>) – Name of subdirectory for calculation.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RDFDeriv.setup_rdf.Sort_Distances">
+<span class="sig-prename descclassname"><span class="pre">RDFDeriv.setup_rdf.</span></span><span class="sig-name descname"><span class="pre">Sort_Distances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.setup_rdf.Sort_Distances" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes an array (dr) and sorts it by the last axis.</p>
+<p>It returns:
+1) the idx map of the sort
+2) the sorted dr array (sdr)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dr</strong> (<em>array_like</em>) – Pairwise distances array</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>index map of the sorted array
+array_like: Sorted array</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RDFDeriv.setup_rdf.Write_Groups">
+<span class="sig-prename descclassname"><span class="pre">RDFDeriv.setup_rdf.</span></span><span class="sig-name descname"><span class="pre">Write_Groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.setup_rdf.Write_Groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes occupancies in each group to a lammps file</p>
+<p>This writes the group occupancies out to a different file for each molcule. This is based on a distance cutoff,
+which is stored in Iargs.cut</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dr</strong> (<em>array_like</em>) – Array of pairwise distances</p></li>
+<li><p><strong>frame</strong> (<em>int</em>) – Timestep associated with the current frame</p></li>
+<li><p><strong>subdir</strong> (<em>str</em>) – Subdirectory where rdf calculation will take place</p></li>
+<li><p><strong>cut</strong> (<em>float</em>) – Spherical (or cylindrical) cutoff distance for defining close group</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RDFDeriv.setup_rdf.Write_System">
+<span class="sig-prename descclassname"><span class="pre">RDFDeriv.setup_rdf.</span></span><span class="sig-name descname"><span class="pre">Write_System</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nmols</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sysfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'system.in'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rdf_test'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.setup_rdf.Write_System" title="Permalink to this definition">¶</a></dt>
+<dd><p>This writes the includes into the simulation input file.</p>
+<p>This takes a base system input file (Iargs.sys) and writes them into a separate system input file
+for each molecule, so that lammps can easily calculate all of them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nmols</strong> (<em>int</em>) – Number of molecules</p></li>
+<li><p><strong>sysfile</strong> (<em>str</em>) – System input file with no run commands inside of it.</p></li>
+<li><p><strong>subdir</strong> (<em>str</em>) – Subdirectory where rdf calculation will take place</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RDFDeriv.setup_rdf.Write_Task">
+<span class="sig-prename descclassname"><span class="pre">RDFDeriv.setup_rdf.</span></span><span class="sig-name descname"><span class="pre">Write_Task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nmols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">343</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue_engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'TORQUE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmol_per_task</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">procs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rdf_test'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RDFDeriv.setup_rdf.Write_Task" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a simple function to write a submit script</p>
+<p>Writes a file, called submit_task.sh</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nmols</strong> (<em>int</em>) – Number of molecules</p></li>
+<li><p><strong>queue_engine</strong> (<em>str</em>) – What queue engine should it write for?
+Options are TORQUE, or SLURM</p></li>
+<li><p><strong>nmol_per_task</strong> (<em>int</em>) – Number of molecules per task</p></li>
+<li><p><strong>hours</strong> (<em>int</em>) – Number of calculation hours</p></li>
+<li><p><strong>procs</strong> (<em>int</em>) – Number of processors (must be appropriate for system)</p></li>
+<li><p><strong>subdir</strong> (<em>str</em>) – Subdirectory where rdf calculation will take place</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-RDFDeriv">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-RDFDeriv" title="Permalink to this heading">¶</a></h2>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">RDFDeriv package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-RDFDeriv.dump_split">RDFDeriv.dump_split module</a><ul>
+<li><a class="reference internal" href="#RDFDeriv.dump_split.Split_Main"><code class="docutils literal notranslate"><span class="pre">Split_Main()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-RDFDeriv.energy_class">RDFDeriv.energy_class module</a><ul>
+<li><a class="reference internal" href="#RDFDeriv.energy_class.Energies"><code class="docutils literal notranslate"><span class="pre">Energies</span></code></a><ul>
+<li><a class="reference internal" href="#RDFDeriv.energy_class.Energies.mol_ener"><code class="docutils literal notranslate"><span class="pre">Energies.mol_ener</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.energy_class.Energies.tot_ener"><code class="docutils literal notranslate"><span class="pre">Energies.tot_ener</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.energy_class.Energies.nmols"><code class="docutils literal notranslate"><span class="pre">Energies.nmols</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.energy_class.Energies.add_mol_ener"><code class="docutils literal notranslate"><span class="pre">Energies.add_mol_ener()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.energy_class.Energies.gen_default"><code class="docutils literal notranslate"><span class="pre">Energies.gen_default()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.energy_class.Energies.plot_ener_dist"><code class="docutils literal notranslate"><span class="pre">Energies.plot_ener_dist()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.energy_class.Energies.pull_lammps"><code class="docutils literal notranslate"><span class="pre">Energies.pull_lammps()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.energy_class.Energies.stats"><code class="docutils literal notranslate"><span class="pre">Energies.stats()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.energy_class.Energies.values"><code class="docutils literal notranslate"><span class="pre">Energies.values()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-RDFDeriv.rdf_class">RDFDeriv.rdf_class module</a><ul>
+<li><a class="reference internal" href="#RDFDeriv.rdf_class.RDFS"><code class="docutils literal notranslate"><span class="pre">RDFS</span></code></a><ul>
+<li><a class="reference internal" href="#RDFDeriv.rdf_class.RDFS.dr"><code class="docutils literal notranslate"><span class="pre">RDFS.dr</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.rdf_class.RDFS.rmax"><code class="docutils literal notranslate"><span class="pre">RDFS.rmax</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.rdf_class.RDFS.nbins"><code class="docutils literal notranslate"><span class="pre">RDFS.nbins</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.rdf_class.RDFS.dim"><code class="docutils literal notranslate"><span class="pre">RDFS.dim</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.rdf_class.RDFS.rdfs"><code class="docutils literal notranslate"><span class="pre">RDFS.rdfs</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.rdf_class.RDFS.xrdf"><code class="docutils literal notranslate"><span class="pre">RDFS.xrdf</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.rdf_class.RDFS.calc_rdf"><code class="docutils literal notranslate"><span class="pre">RDFS.calc_rdf()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.rdf_class.RDFS.lightweight_save"><code class="docutils literal notranslate"><span class="pre">RDFS.lightweight_save()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.rdf_class.RDFS.mol_ener_weight"><code class="docutils literal notranslate"><span class="pre">RDFS.mol_ener_weight()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.rdf_class.RDFS.report_rdfs"><code class="docutils literal notranslate"><span class="pre">RDFS.report_rdfs()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.rdf_class.RDFS.total_ener_weight"><code class="docutils literal notranslate"><span class="pre">RDFS.total_ener_weight()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-RDFDeriv.rdf_main">RDFDeriv.rdf_main module</a><ul>
+<li><a class="reference internal" href="#RDFDeriv.rdf_main.LIPIDS_Main"><code class="docutils literal notranslate"><span class="pre">LIPIDS_Main()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.rdf_main.REG_Main"><code class="docutils literal notranslate"><span class="pre">REG_Main()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-RDFDeriv.setup_rdf">RDFDeriv.setup_rdf module</a><ul>
+<li><a class="reference internal" href="#RDFDeriv.setup_rdf.GMX_Main"><code class="docutils literal notranslate"><span class="pre">GMX_Main()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.setup_rdf.Get_Distances"><code class="docutils literal notranslate"><span class="pre">Get_Distances()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.setup_rdf.LAMMPS_Main"><code class="docutils literal notranslate"><span class="pre">LAMMPS_Main()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.setup_rdf.Prep_Dir"><code class="docutils literal notranslate"><span class="pre">Prep_Dir()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.setup_rdf.Sort_Distances"><code class="docutils literal notranslate"><span class="pre">Sort_Distances()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.setup_rdf.Write_Groups"><code class="docutils literal notranslate"><span class="pre">Write_Groups()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.setup_rdf.Write_System"><code class="docutils literal notranslate"><span class="pre">Write_System()</span></code></a></li>
+<li><a class="reference internal" href="#RDFDeriv.setup_rdf.Write_Task"><code class="docutils literal notranslate"><span class="pre">Write_Task()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-RDFDeriv">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="modules.html"
+                          title="previous chapter">RDFDeriv</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/RDFDeriv.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="RDFDeriv"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">RDF Derivatives v1.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >RDFDeriv</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">RDFDeriv package</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Zeke Piskulich.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>
