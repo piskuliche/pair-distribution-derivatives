@@ -46,7 +46,7 @@ def LAMMPS_Main(datafile, trjfile, sysfile, nconfigs=5000, skip=1, framesep=1000
         dr = Get_Distances(comr,L,dim)
         Write_Groups(dr, current_frame, subdir, cut)
     Write_System(nmols, sysfile=sysfile, subdir=subdir)
-    Write_Task(Iargs, nmols = nmols, queue_engine="TORQUE", nmol_per_task=100, hours=2, procs=4)
+    Write_Task(nmols = nmols, queue_engine="TORQUE", nmol_per_task=100, hours=2, procs=4, subdir=subdir)
 
 def GMX_Main(datafile, trjfile, nconfigs=5000, skip=1, framesep=1000, startframe=1000000, dim=3):
     """Calls the code for writing Gromacs Files
