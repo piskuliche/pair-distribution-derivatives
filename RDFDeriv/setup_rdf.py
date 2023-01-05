@@ -2,6 +2,7 @@
 import glob, shutil
 import numpy as np
 import MDAnalysis as mda
+import sys
 
 
 """
@@ -17,6 +18,8 @@ def LAMMPS_Main(datafile, trjfile, sysfile, nconfigs=5000, skip=1, framesep=1000
     """Calls the code for writing LAMMPS Files
 
     This function calls the code for writing LAMMPS files for calculating the energies.
+
+    Logfiles are written to subdir_setup.log
 
     Args:
         datafile (str): Filename of lammps data file
@@ -35,9 +38,10 @@ def LAMMPS_Main(datafile, trjfile, sysfile, nconfigs=5000, skip=1, framesep=1000
     u = mda.Universe(datafile, trjfile)
     atoms = u.select_atoms("all")
     nmols=0
+    logger = open(subdir+"_setup.log",'w')
     for ts in u.trajectory[0:nconfigs:skip]:
         current_frame = ts.frame*framesep + startframe
-        print("Working on frame: %d" % current_frame)
+        logger.write("Working on frame: %d\n" % current_frame)
         L = ts.dimensions[:3]
         comr = atoms.center_of_mass(compound='residues')
         nmols = np.shape(comr)[0]
@@ -47,6 +51,7 @@ def LAMMPS_Main(datafile, trjfile, sysfile, nconfigs=5000, skip=1, framesep=1000
         Write_Groups(dr, current_frame, subdir, cut)
     Write_System(nmols, sysfile=sysfile, subdir=subdir)
     Write_Task(nmols = nmols, queue_engine="TORQUE", nmol_per_task=100, hours=2, procs=4, subdir=subdir)
+    logger.close()
 
 def GMX_Main(datafile, trjfile, nconfigs=5000, skip=1, framesep=1000, startframe=1000000, dim=3):
     """Calls the code for writing Gromacs Files
