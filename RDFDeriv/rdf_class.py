@@ -167,6 +167,7 @@ class RDFS:
         de = np.array(totener) - average_energy
         wrdf = np.multiply(de[:,None],av_over_mol)
         av_total = np.average(wrdf,axis=0)
+        
 
         err = self._Error(av_over_mol,nblocks=nblocks)
 
