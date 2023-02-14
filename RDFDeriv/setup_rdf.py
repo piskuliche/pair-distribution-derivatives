@@ -214,13 +214,9 @@ def Write_System(nmols, sysfile="system.in", subdir="rdf_test"):
 
     """
     print("Writing System Files")
-    lines=None
-    with open("./%s/%s" %(subdir, sysfile),'r') as f:
-        lines = f.readlines()
     for i in range(nmols):
         with open("./%s/calc_dir/%s-%d"%(subdir,sysfile,i),'w') as g:
-            for line in lines:
-                g.write(line)
+            g.write("include ../include_header\n")
             g.write("log logs/log.%d.out\n"%i)
             g.write("include ../include_dir/include.computes\n")
             g.write("include ../include_dir/include.groups-%d\n"%i)
