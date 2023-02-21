@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 import glob, shutil
 import numpy as np
+#import cupy as cp
 import MDAnalysis as mda
+from numba import jit
 import sys
+#from cupyx.profiler import benchmark
 
 
 """
@@ -14,7 +17,7 @@ This is a code that sets up an energy calculation for different groups, split up
 """
 
 def LAMMPS_Main(datafile, trjfile, sysfile, nconfigs=5000, skip=1, framesep=1000,
-                 startframe=1000000, dim=3, cut=12.0, subdir="rdf_test"):
+                 startframe=1000000, dim=3, cut=12.0, subdir="rdf_test", xp=np):
     """Calls the code for writing LAMMPS Files
 
     This function calls the code for writing LAMMPS files for calculating the energies.
@@ -39,16 +42,22 @@ def LAMMPS_Main(datafile, trjfile, sysfile, nconfigs=5000, skip=1, framesep=1000
     atoms = u.select_atoms("all")
     nmols=0
     logger = open(subdir+"_setup.log",'w')
+    dr = None
+    count = 0
     for ts in u.trajectory[0:nconfigs:skip]:
         current_frame = ts.frame*framesep + startframe
+        print(current_frame,flush=True)
         logger.write("Working on frame: %d\n" % current_frame)
-        L = ts.dimensions[:3]
-        comr = atoms.center_of_mass(compound='residues')
-        nmols = np.shape(comr)[0]
-        if ts.frame == 0:
+        L = xp.asarray(ts.dimensions[:3])
+        comr = xp.asarray(atoms.center_of_mass(compound='residues'))
+        nmols = xp.shape(comr)[0]
+        if count == 0:
             Prep_Dir(nmols, subdir)
-        dr = Get_Distances(comr,L,dim)
+            dr = np.zeros((np.shape(comr)[0],np.shape(comr)[0]))
+        #dr = Get_Distances(comr, L, dim)
+        mda.lib.distances.distance_array(comr, comr, box=ts.dimensions, result=dr)
         Write_Groups(dr, current_frame, subdir, cut)
+        count += 1
     Write_System(nmols, sysfile=sysfile, subdir=subdir)
     Write_Task(nmols = nmols, queue_engine="TORQUE", nmol_per_task=100, hours=2, procs=4, subdir=subdir)
     logger.close()
@@ -65,7 +74,7 @@ def GMX_Main(datafile, trjfile, nconfigs=5000, skip=1, framesep=1000, startframe
     """
     exit("Error: Gromacs support not yet added")
 
-def Get_Distances(r,L,dim=3):
+#def Get_Distances(r=np.array([[]]),L=np.array([]),dim=3, vecdr=np.array([[]])):
     """Calculates the self distance array between a vector and its other elements.
 
     This uses numpy broadcasting to calculate ALL the pairwise distances and outputs them in a matrix of distances.
@@ -82,9 +91,10 @@ def Get_Distances(r,L,dim=3):
         array_like: returns pairwise distances
 
     """
-    vecdr = r[:,np.newaxis,:dim]-r[np.newaxis,:,:dim]
-    vecdr = vecdr - np.multiply(L[:dim],np.round(np.divide(vecdr,L[:dim])))
-    dr = np.linalg.norm(vecdr,axis=-1)
+    xp = np
+    vecdr = r[:,xp.newaxis,:dim]-r[xp.newaxis,:,:dim]
+    vecdr = vecdr - xp.multiply(L[:dim],xp.round(xp.divide(vecdr,L[:dim])))
+    dr = xp.linalg.norm(vecdr,axis=-1)
     return dr
 
 def Sort_Distances(dr):
@@ -101,9 +111,10 @@ def Sort_Distances(dr):
         array_like: Sorted array
 
     """
-    natoms = np.shape(dr)[0]
-    idx = np.argsort(dr,axis=-1,kind='quicksort')
-    sdr=np.take_along_axis(dr, idx, axis=-1)
+    xp = np
+    #idx = xp.argsort(dr,axis=-1,kind='quicksort')
+    idx = xp.argsort(dr,axis=-1)
+    sdr=xp.take_along_axis(dr, idx, axis=-1)
     return idx,sdr
 
 def Prep_Dir(nmols, subdir):
@@ -179,12 +190,11 @@ def Write_Groups(dr, frame, subdir, cut=12):
         cut (float): Spherical (or cylindrical) cutoff distance for defining close group
 
     """
-
-    nmols=np.shape(dr)[0]
-    mols = np.arange(0,nmols)
+    xp=np
+    nmols=xp.shape(dr)[0]
     for i in range(nmols):
         fi = open("./%s/include_dir/include.groups-%d"%(subdir, i),'a')
-        close=np.where(dr[i]<cut)[-1]
+        close=xp.where(dr[i]<cut)[-1]
         for grp in ["lt","solu","close","far"]:
             fi.write("group %s clear\n"%grp)
         fi.write("\n")
@@ -332,11 +342,16 @@ if __name__ == "__main__":
     parser.add_argument('-dim',     default=2,                  type=int, help='Dimsensionality (2 or 3)')
     parser.add_argument('-software',default='LAMMPS',           type=str, help='MD Simualtion Program')
     parser.add_argument('-subdir',  default='rdf_deriv',        type=str, help='Subdirectory for calculation')
+    parser.add_argument('-gpu',     default=0,                  type=int, help='[0] Run on GPU [1] Run on CPU' )
     Iargs = parser.parse_args()
 
+    xp = np
+    if Iargs.gpu == 1:
+        xp = np
+    
     if Iargs.software == 'LAMMPS':
         LAMMPS_Main(Iargs.data, Iargs.dump, Iargs.sys, nconfigs=Iargs.nconfigs, skip=Iargs.skip, framesep=Iargs.framesep,
-                 startframe=Iargs.startframe, dim=Iargs.dim, cut=Iargs.cut, subdir=Iargs.subdir)
+                 startframe=Iargs.startframe, dim=Iargs.dim, cut=Iargs.cut, subdir=Iargs.subdir, xp=xp)
     elif Iargs.software == 'GMX':
         GMX_Main(Iargs.data, Iargs.dump, Iargs.sys, nconfigs=Iargs.nconfigs, skip=Iargs.skip, framesep=Iargs.framesep,
                  startframe=Iargs.startframe, dim=Iargs.dim, cut=Iargs.cut, subdir=Iargs.subdir)
