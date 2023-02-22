@@ -1,5 +1,4 @@
 HOMEPATH=$(PWD)
-MODLOC=/usr2/postdoc/piskulic/privatemodules
 
 check_dist:
 	mkdir -p bin
