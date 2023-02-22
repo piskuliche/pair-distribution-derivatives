@@ -1,146 +1,26 @@
-#!/usr/bin/env python
 import glob, shutil
 import numpy as np
 
-import MDAnalysis as mda
-import sys
+def LAMMPS_Fort_Main(molecules, nconfigs=5000, skip=1, framesep=1000, startframe=1000000, subdir="rdf_deriv", sysfile="system.in"):
+    for molid in molecules:
+        print("molid %d" % molid)
+        neighbors = Read_Neighbor_File(molid, nconfigs=nconfigs, skip=skip, subdir=subdir)
+        print(np.shape(neighbors))
+        framesep = skip*framesep
+        for i in range(0,nconfigs,skip):
+            frame = startframe + framesep*i 
+            Write_Groups(molid, neighbors[i], frame, subdir=subdir)
+    Write_System(molecules, sysfile=sysfile, subdir=subdir)
 
+    return
 
-#from cupyx.profiler import benchmark
-
-
-"""
-
-Copyright November 2022 - Boston University
-
-This is a code that sets up an energy calculation for different groups, split up into "solute", "close", and "far" for each molecule in the system. It right now works for primarily lammps, but my goals is to extend this eventually to gromacs as well.
-
-"""
-
-def LAMMPS_Main(datafile, trjfile, sysfile, nconfigs=5000, skip=1, framesep=1000,
-                 startframe=1000000, dim=3, cut=12.0, subdir="rdf_test", xp=np):
-    """Calls the code for writing LAMMPS Files
-
-    This function calls the code for writing LAMMPS files for calculating the energies.
-
-    Logfiles are written to subdir_setup.log
-
-    Args:
-        datafile (str): Filename of lammps data file
-        trjfile (str): Filename of trajectory file
-        sysfile (str): Filename of system input file with run commands removed 
-        nconfigs (int): Number of configurations [default=5000]
-        skip (int): Number of configs to skip [default=1]
-        framesep (int): Number of timesteps between frames [default=1000]
-        startframe (int): Starting frame number [default-1000000]
-        dim (int): Number of dimensions [default=2]
-        cut (float): Spherical/cylindrical cutoff values [default=12.0]
-        subdir (str): Name of the subdirectory to generate the files. [default=rdf_test]
-        
-
-    """
-    u = mda.Universe(datafile, trjfile)
-    atoms = u.select_atoms("all")
-    nmols=0
-    logger = open(subdir+"_setup.log",'w')
-    dr = None
-    count = 0
-    for ts in u.trajectory[0:nconfigs:skip]:
-        current_frame = ts.frame*framesep + startframe
-        print(current_frame,flush=True)
-        logger.write("Working on frame: %d\n" % current_frame)
-        L = xp.asarray(ts.dimensions[:dim])
-        comr = xp.asarray(atoms.center_of_mass(compound='residues'))
-        nmols = xp.shape(comr)[0]
-        if count == 0:
-            Prep_Dir(nmols, subdir)
-            dr = np.zeros((np.shape(comr)[0],np.shape(comr)[0]))
-        #dr = Get_Distances(comr, L, dim)
-        mda.lib.distances.distance_array(comr, comr, box=ts.dimensions, result=dr)
-        #dr = Alt_Get_Distances(xp.asarray(comr[:,np.newaxis,:dim]), xp.asarray(comr[np.newaxis,:,:dim]), L)
-        Write_Groups(dr, current_frame, subdir, cut)
-        count += 1
-    Write_System(nmols, sysfile=sysfile, subdir=subdir)
-    Write_Task(nmols = nmols, queue_engine="TORQUE", nmol_per_task=100, hours=2, procs=4, subdir=subdir)
-    logger.close()
-
-def GMX_Main(datafile, trjfile, nconfigs=5000, skip=1, framesep=1000, startframe=1000000, dim=3):
-    """Calls the code for writing Gromacs Files
-
-    This function calls the code for writing GROMACS files for calculating the energies.
-
-    Args:
-        Iargs (ArgParse Object): These are the system input arguments used by argparse.
-    Todo:
-        * Implement these features for gromacs, may potentially require writing some new functions.
-    """
-    exit("Error: Gromacs support not yet added")
-
-def Get_Distances(r, L, dim=3):
-    """Calculates the self distance array between a vector and its other elements.
-
-    This uses numpy broadcasting to calculate ALL the pairwise distances and outputs them in a matrix of distances.
-
-    This is described here: 
-    https://stackoverflow.com/questions/60039982/numpy-python-vectorize-distance-function-to-calculate-pairwise-distance-of-2-ma/60040269#60040269
-    
-    Args:
-        r (array_like): Array of positions shape(natoms,dim)
-        L (array_like): Box dimension array shape(dim,)
-        dim (int): Box dimensionality [default=3]
-
-    Returns:
-        array_like: returns pairwise distances
-
-    """
-    xp = np
-    vecdr = r[:,xp.newaxis,:dim]-r[xp.newaxis,:,:dim]
-    vecdr = vecdr - xp.multiply(L[:dim],xp.round(xp.divide(vecdr,L[:dim])))
-    dr = xp.linalg.norm(vecdr,axis=-1)
-    return dr
-
-def Alt_Get_Distances(r1, r2, L):
-    """Calculates the self distance array between a vector and its other elements.
-
-    This uses numpy broadcasting to calculate ALL the pairwise distances and outputs them in a matrix of distances.
-
-    This is described here: 
-    https://stackoverflow.com/questions/60039982/numpy-python-vectorize-distance-function-to-calculate-pairwise-distance-of-2-ma/60040269#60040269
-    
-    Args:
-        r (array_like): Array of positions shape(natoms,dim)
-        L (array_like): Box dimension array shape(dim,)
-        dim (int): Box dimensionality [default=3]
-
-    Returns:
-        array_like: returns pairwise distances
-
-    """
-    xp = np
-    vecdr = xp.subtract(r1,r2)
-    vecdr = xp.subtract(vecdr,xp.multiply(L,xp.around(xp.divide(vecdr,L))))
-    dr = xp.linalg.norm(vecdr,axis=-1)
-    return dr
-
-def Sort_Distances(dr):
-    """ This function takes an array (dr) and sorts it by the last axis.
-
-    It returns:
-    1) the idx map of the sort
-    2) the sorted dr array (sdr)
-
-    Args: 
-        dr (array_like): Pairwise distances array
-    Returns:
-        int: index map of the sorted array
-        array_like: Sorted array
-
-    """
-    xp = np
-    #idx = xp.argsort(dr,axis=-1,kind='quicksort')
-    idx = xp.argsort(dr,axis=-1)
-    sdr=xp.take_along_axis(dr, idx, axis=-1)
-    return idx,sdr
+def Read_Neighbor_File(molid, nconfigs=5000, skip=1,subdir="rdf_deriv"):
+    neighbors = []
+    with open("%s/neighbors/neighbors_%d.dat"%(subdir,molid), 'r') as f:
+        lines = f.readlines()
+        for line in lines:
+            neighbors.append(line.strip())
+    return neighbors[1::skip]
 
 def Prep_Dir(nmols, subdir):
     """Write files and directories to compute energies for LAMMPS
@@ -162,6 +42,8 @@ def Prep_Dir(nmols, subdir):
         os.makedirs("./%s" % subdir)
     if not os.path.exists("./%s/include_dir" % subdir):
         os.makedirs("./%s/include_dir" % subdir)
+    if not os.path.exists("./%s/neighbors" % subdir):
+        raise OSError("No neighbors directory found. Please run the fortran code first.")
     if not os.path.exists("./%s/ener_dir" % subdir):
         os.makedirs("./%s/ener_dir" % subdir)
     if not os.path.exists("./%s/calc_dir" % subdir):
@@ -196,13 +78,13 @@ def Prep_Dir(nmols, subdir):
     fi.close()
         
     for i in range(nmols):
-        incf = open("./%s/include_dir/include.groups-%d"%(subdir,i),'w')
+        incf = open("./%s/include_dir/include.groups-%d"%(subdir,i+1),'w')
         # Final Files
         incf.write("fix wpair all ave/time 1000 1 1000 c_sspair c_ccpair c_ffpair c_scpair c_sfpair c_cfpair file ../ener_dir/pair.compute%d\n"%i)
         incf.write("fix wintr all ave/time 1000 1 1000 c_sintra c_cintra c_fintra file ../ener_dir/intra.compute%d\n"%i)
         incf.close()
 
-def Write_Groups(dr, frame, subdir, cut=12):
+def Write_Groups(molid, neighbors, frame, subdir):
     """Writes occupancies in each group to a lammps file
     
     This writes the group occupancies out to a different file for each molcule. This is based on a distance cutoff,
@@ -215,28 +97,22 @@ def Write_Groups(dr, frame, subdir, cut=12):
         cut (float): Spherical (or cylindrical) cutoff distance for defining close group
 
     """
-    xp=np
-    nmols=xp.shape(dr)[0]
-    for i in range(nmols):
-        fi = open("./%s/include_dir/include.groups-%d"%(subdir, i),'a')
-        close=xp.where(dr[i]<cut)[-1]
-        for grp in ["lt","solu","close","far"]:
-            fi.write("group %s clear\n"%grp)
-        fi.write("\n")
-        fi.write("group close molecule ")
-        for j in close:
-            if j != i: fi.write("%d "% (j+1)) # Ignore i from close
-        fi.write("\n")
-        fi.write("group solu molecule %d\n"%(i+1))
-        fi.write("group far subtract all close solu\n")
+    fi = open("./%s/include_dir/include.groups-%d"%(subdir, molid),'a')
+    for grp in ["lt","solu","close","far"]:
+        fi.write("group %s clear\n"%grp)
+    fi.write("\n")
+    fi.write("group close molecule %s\n"% neighbors)
+    fi.write("\n")
+    fi.write("group solu molecule %d\n"%(molid))
+    fi.write("group far subtract all close solu\n")
 
-        fi.write("\n")
-        fi.write('print "beginning rerun %d"\n'%frame)
-        fi.write("rerun ../../dump_dir/dump.lammpsdump-%d first %d last %d dump x y z\n" % (frame,frame,frame))
-        fi.write('print "finishing rerun"\n')
-        fi.close()
+    fi.write("\n")
+    fi.write('print "beginning rerun %d"\n'%frame)
+    fi.write("rerun ../../dump_dir/dump.lammpsdump-%d first %d last %d dump x y z\n" % (frame,frame,frame))
+    fi.write('print "finishing rerun"\n')
+    fi.close()
 
-def Write_System(nmols, sysfile="system.in", subdir="rdf_test"):
+def Write_System(molecules, sysfile="system.in", subdir="rdf_test"):
     """This writes the includes into the simulation input file.
 
     This takes a base system input file (Iargs.sys) and writes them into a separate system input file
@@ -249,12 +125,12 @@ def Write_System(nmols, sysfile="system.in", subdir="rdf_test"):
 
     """
     print("Writing System Files")
-    for i in range(nmols):
-        with open("./%s/calc_dir/%s-%d"%(subdir,sysfile,i),'w') as g:
+    for molid in molecules:
+        with open("./%s/calc_dir/%s-%d"%(subdir,sysfile,molid),'w') as g:
             g.write("include ../include_header\n")
-            g.write("log logs/log.%d.out\n"%i)
+            g.write("log logs/log.%d.out\n"%molid)
             g.write("include ../include_dir/include.computes\n")
-            g.write("include ../include_dir/include.groups-%d\n"%i)
+            g.write("include ../include_dir/include.groups-%d\n"%molid)
     
 def Write_Task(nmols = 343, queue_engine="TORQUE", nmol_per_task=1, hours=2, procs=4, subdir="rdf_test"):
     """This is a simple function to write a submit script
@@ -312,7 +188,7 @@ def Write_Task(nmols = 343, queue_engine="TORQUE", nmol_per_task=1, hours=2, pro
 
             f.write("cd calc_dir\n")
             f.write("for i in {1..%d}; do\n" % nmol_per_task)
-            f.write("   molid=$((fid*%d + i - 1))\n" % nmol_per_task)
+            f.write("   molid=$((fid*%d + i ))\n" % nmol_per_task)
             f.write("   if [ ${molid} -gt %d ]; then\n" % nmols)
             f.write("       break\n")
             f.write("   fi\n")
@@ -353,32 +229,28 @@ def Write_Task(nmols = 343, queue_engine="TORQUE", nmol_per_task=1, hours=2, pro
             f.write("done\n")
             f.write("cd -\n")
 
+
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description='This code creates a series of files for lammps simulations that quickly rerun and re-calculate energies')
-    parser.add_argument('-data',    default="equil.data",       type=str,help='Name of data file [default equil.data]')
-    parser.add_argument('-dump',    default="dump.lammpsdump",  type=str,help='Name of dump file [default dump.lammpsdump]')
+    parser.add_argument('-step', default=1, type=int, help='Which step of the calc to run')
+    parser.add_argument('-nmols',   default=343,                  type=int, help='Number of molecules in the system')
     parser.add_argument('-nconfigs',default=10000,              type=int, help='Number of configurations [default 10000]')
     parser.add_argument('-sys',     default="system.in",        type=str, help='System input file [default system.in]')
-    parser.add_argument('-cut',     default=30,                 type=float, help='Cutoff to use for defining what is close')
     parser.add_argument('-skip',    default=1,                  type=int, help='Frequency to use frames')
     parser.add_argument('-framesep',default=1000,               type=int, help='Dump Frequency (Excluding Skip)')
     parser.add_argument('-startframe',default=1000000,          type=int, help='Starting frame timestep number')
-    parser.add_argument('-dim',     default=2,                  type=int, help='Dimsensionality (2 or 3)')
-    parser.add_argument('-software',default='LAMMPS',           type=str, help='MD Simualtion Program')
     parser.add_argument('-subdir',  default='rdf_deriv',        type=str, help='Subdirectory for calculation')
-    parser.add_argument('-gpu',     default=0,                  type=int, help='[0] Run on GPU [1] Run on CPU' )
     Iargs = parser.parse_args()
 
-    xp = np
-    if Iargs.gpu == 1:
-        xp = np
-    
-    if Iargs.software == 'LAMMPS':
-        LAMMPS_Main(Iargs.data, Iargs.dump, Iargs.sys, nconfigs=Iargs.nconfigs, skip=Iargs.skip, framesep=Iargs.framesep,
-                 startframe=Iargs.startframe, dim=Iargs.dim, cut=Iargs.cut, subdir=Iargs.subdir, xp=xp)
-    elif Iargs.software == 'GMX':
-        GMX_Main(Iargs.data, Iargs.dump, Iargs.sys, nconfigs=Iargs.nconfigs, skip=Iargs.skip, framesep=Iargs.framesep,
-                 startframe=Iargs.startframe, dim=Iargs.dim, cut=Iargs.cut, subdir=Iargs.subdir)
+    if Iargs.step == 1:
+        Prep_Dir(Iargs.nmols, Iargs.subdir)
+    elif Iargs.step == 2:
+        molecules = np.arange(Iargs.nmols)+1
+        LAMMPS_Fort_Main(molecules, nconfigs=Iargs.nconfigs, skip=Iargs.skip, framesep=Iargs.framesep,
+                         startframe=Iargs.startframe, subdir=Iargs.subdir)
+    elif Iargs.step == 3:
+        Write_Task(nmols = Iargs.nmols, nmol_per_task = 1, hours = 24, queue_engine = "TORQUE", subdir = Iargs.subdir)
     else:
-        exit("Error: Sofware %s not recognized, options are LAMMPS or GMX" % Iargs.software)
+        raise ValueError("Error: Step %d is not yet supported" % Iargs.step)
