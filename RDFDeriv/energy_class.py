@@ -23,13 +23,14 @@ class Energies:
         self.tot_ener = {}
         self.nmols = nmols
 
-    def add_mol_ener(self, compstr='ss', col=1, fname='pair.compute', program='LAMMPS'):
+    def add_mol_ener(self, subdir, compstr='ss', col=1, fname='pair.compute', program='LAMMPS'):
         """Add energies from a file to the self.mol_ener dictionary
 
         This function reads in energies from the file and gets it into the molecular energy container such that it
         could be used for later weighting. 
 
         Args: 
+            subdir (str): Subdirectory for the specific calculation
             compstr (str): String name for the energy component
             col (int): Integer number for column from which energy is read.
             fname (str): Base name of energy file.
@@ -40,7 +41,7 @@ class Energies:
             raise ValueError("%s already exists within class."%compstr)
         self.mol_ener[compstr]={}
         for i in range(self.nmols):
-            self.mol_ener[compstr][i+1]=np.genfromtxt("ener_dir/%s%d"%(fname,i),unpack=True,usecols=col,skip_header=2)
+            self.mol_ener[compstr][i+1]=np.genfromtxt("%s/ener_dir/%s%d"%(subdir, fname,i),unpack=True,usecols=col,skip_header=2)
     
     def pull_lammps(self, fname='log.production'):
         """Pulls energy data from LAMMPS
@@ -84,13 +85,14 @@ class Energies:
                 L = np.array(data[key])**(1./3.)
                 np.savetxt("L.dat", np.c_[L])
 
-    def gen_default(self, fname='pair.compute',program='LAMMPS'):
+    def gen_default(self, subdir, fname='pair.compute',program='LAMMPS'):
         """Generates a default set of energies
 
         This function assumes that you want to split your energies by solute, close and far, and the intermingling of 
         these groups, rather than something more complex. It reads all the files, and generates the dictionary with them in it.
 
-        Args:
+        Args:  
+            subdir (str): Subdirectory for calculation.
             fname (str): Base name of energy file.
             program (str): Which MD program generated the files.
 
@@ -98,7 +100,7 @@ class Energies:
         default_types = ['ss','cc','ff','sc','sf','cf']
         for i, key in enumerate(default_types):
             print("Reading energies for %s"%key)
-            self.add_mol_ener(compstr=default_types[i], col=i+1, fname=fname, program=program)
+            self.add_mol_ener(subdir, compstr=default_types[i], col=i+1, fname=fname, program=program)
 
     def plot_ener_dist(self,compstr='ss', _nbins=100, _dpi=300, _figsize=(3,3), savefile=False):
         """Plots the energy distributions

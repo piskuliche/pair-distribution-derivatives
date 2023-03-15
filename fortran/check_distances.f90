@@ -19,14 +19,27 @@ program check_distance
 
     character(len=1024) :: out_fname
     character(len=1024) :: format_string
-    character(len=1024) :: runname
+    character(len=1024) :: runname, subdir
+    character(len=20) :: cmd_line_char, mol_char
+    
+    if (command_argument_count() .ne. 1) then
+        write(*,*) 'Error: Need to include cutoff distance on command line'
+        stop
+    endif
 
+    call get_command_argument(1, cmd_line_char)
+    read(cmd_line_char,*) cutoff
+
+    write(*,*) "Cutoff for this run is ", cutoff
 
     
     !Read input file that provides L, nmols, nframes, and cutoff
-    call read_input(nmols, natoms, nframes, frames_per_chunk, cutoff, dim, runname)
+    call read_input(nmols, natoms, nframes, frames_per_chunk, dim, runname)
 
-    call system("mkdir -p " // trim(runname) // "/neighbors")
+    ! Write to subdir variable the path
+    subdir = trim(runname) // '_' // trim(cmd_line_char)
+
+    call system("mkdir -p " // trim(subdir) // "/neighbors")
 
     nchunks = nframes / frames_per_chunk
     
@@ -59,12 +72,14 @@ program check_distance
     open(21, file="dump.lammpsdump", status="old")
 
     do j = 1, nmols
-        write(out_fname, "(A9,A21,I0,A4)") adjustl(trim(runname)), "/neighbors/neighbors_", j, ".dat"
+        !write(out_fname, "(A9,A21,I0,A4)") adjustl(trim(runname)), "/neighbors/neighbors_", j, ".dat"
+        write(mol_char,*) j
+        out_fname = trim(subdir) // '/neighbors/neighbors_' // trim(adjustl(mol_char)) // trim('.dat')
         open(22, file=trim(out_fname))
         write(22, *) "# Neighbors for molecule ", j
         close(22)
     end do
-
+    
     
     do ichunk = 1, nchunks
         write(*,*) "Reading chunk ", ichunk, " of ", nchunks
@@ -132,12 +147,11 @@ program check_distance
 
         end function pbc_dist
 
-        subroutine read_input(nmols, natoms, nframes, frames_per_chunk, cutoff, dim, runname)
+        subroutine read_input(nmols, natoms, nframes, frames_per_chunk, dim, runname)
             ! This subroutine reads in the input file
-            ! and sets the values of L, nmols, nframes, and cutoff
+            ! and sets the values of L, nmols, and nframes
             implicit none
             integer, intent(out) :: nmols, nframes
-            real, intent(out) :: cutoff
             integer, intent(out) :: dim, natoms, frames_per_chunk
 
             character(len=1024), intent(out) :: runname
@@ -151,8 +165,6 @@ program check_distance
             read(1,*) nmols, natoms
             read(1,*)
             read(1,*) nframes, frames_per_chunk
-            read(1,*)
-            read(1,*) cutoff
             read(1,*)
             read(1,*) dim
             close(1)
@@ -252,9 +264,12 @@ program check_distance
             integer :: i, j
 
             character(len=1024) :: out_fname
+            character(len=20) :: mol_char
 
             do i = 1, nmols
-                write(out_fname, "(A9,A21,I0,A4)") adjustl(trim(runname)), "/neighbors/neighbors_", i, ".dat"
+                !write(out_fname, "(A9,A21,I0,A4)") adjustl(trim(runname)), "/neighbors/neighbors_", i, ".dat"
+                write(mol_char,*) i
+                out_fname = trim(subdir) // '/neighbors/neighbors_' // trim(adjustl(mol_char)) // trim('.dat')
                 open(22, file=trim(out_fname), status='old', position='append')
                 write(22, '(1000I5)') (int(neighbors(i, j)), j=1, neigh_count(i))
                 close(22)
