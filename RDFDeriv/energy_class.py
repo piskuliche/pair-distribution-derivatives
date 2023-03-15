@@ -41,7 +41,7 @@ class Energies:
             raise ValueError("%s already exists within class."%compstr)
         self.mol_ener[compstr]={}
         for i in range(self.nmols):
-            if i % 100 == 0: print('Reached mol %d' % i)
+            if i % 500 == 0: print('Reached mol %d' % i)
             self.mol_ener[compstr][i+1]=np.genfromtxt("%s/ener_dir/%s%d"%(subdir, fname,i),unpack=True,usecols=col,skip_header=2)
     
     def pull_lammps(self, fname='log.production'):
