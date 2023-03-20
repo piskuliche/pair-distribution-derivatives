@@ -22,7 +22,7 @@ def Read_Neighbor_File(molid, nconfigs=5000, skip=1,subdir="rdf_deriv"):
             neighbors.append(line.strip())
     return neighbors[1::skip]
 
-def Prep_Dir(nmols, subdir):
+def Prep_Dir(nmols, subdir, framesep=1000):
     """Write files and directories to compute energies for LAMMPS
     
     This function prepares files to calculate the energies for each group (solute, close, and far) to 
@@ -35,6 +35,7 @@ def Prep_Dir(nmols, subdir):
     Args:
         nmols (int): Number of molecules
         subdir (str): Name of subdirectory for calculation.
+        framesep (int): Number of frames between configurations.
     
     """
     import os
@@ -80,8 +81,8 @@ def Prep_Dir(nmols, subdir):
     for i in range(nmols):
         incf = open("./%s/include_dir/include.groups-%d"%(subdir,i+1),'w')
         # Final Files
-        incf.write("fix wpair all ave/time 1000 1 1000 c_sspair c_ccpair c_ffpair c_scpair c_sfpair c_cfpair file ../ener_dir/pair.compute%d\n"%i)
-        incf.write("fix wintr all ave/time 1000 1 1000 c_sintra c_cintra c_fintra file ../ener_dir/intra.compute%d\n"%i)
+        incf.write("fix wpair all ave/time %d 1 %d c_sspair c_ccpair c_ffpair c_scpair c_sfpair c_cfpair file ../ener_dir/pair.compute%d\n"%(framesep, framesep,i))
+        incf.write("fix wintr all ave/time %d 1 %d c_sintra c_cintra c_fintra file ../ener_dir/intra.compute%d\n"%(framesep,framesep,i))
         incf.close()
 
 def Write_Groups(molid, neighbors, frame, subdir):
@@ -245,7 +246,7 @@ if __name__ == "__main__":
     Iargs = parser.parse_args()
 
     if Iargs.step == 1:
-        Prep_Dir(Iargs.nmols, Iargs.subdir)
+        Prep_Dir(Iargs.nmols, Iargs.subdir, framesep=Iargs.framesep)
     elif Iargs.step == 2:
         molecules = np.arange(Iargs.nmols)+1
         LAMMPS_Fort_Main(molecules, nconfigs=Iargs.nconfigs, skip=Iargs.skip, framesep=Iargs.framesep,
